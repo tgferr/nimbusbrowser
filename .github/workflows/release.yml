@@ -102,7 +102,7 @@ jobs:
       - name: Install dependencies and build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-glx libegl1 imagemagick
+          sudo apt-get install -y libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-glx libegl1 imagemagick fakeroot
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
@@ -167,6 +167,51 @@ jobs:
           tar -czvf ../dist-installer/Nimbus-Browser-v${{ env.VERSION }}-linux-portable.tar.gz Nimbus/
           cd ..
 
+      - name: Package Debian (.deb)
+        run: |
+          # Prepara estrutura do pacote Debian
+          mkdir -p DebDir/usr/lib/nimbus-browser
+          mkdir -p DebDir/usr/bin
+          mkdir -p DebDir/usr/share/applications
+          mkdir -p DebDir/usr/share/icons/hicolor/256x256/apps
+          mkdir -p DebDir/DEBIAN
+
+          # Copia binários
+          cp -r dist/Nimbus/* DebDir/usr/lib/nimbus-browser/
+          
+          # Cria link simbólico para o executável
+          ln -s /usr/lib/nimbus-browser/Nimbus DebDir/usr/bin/nimbus-browser
+
+          # Cria atalho (Desktop Entry)
+          cat << 'EOF' > DebDir/usr/share/applications/nimbus-browser.desktop
+          [Desktop Entry]
+          Name=Nimbus Browser
+          Exec=nimbus-browser
+          Icon=nimbus-browser
+          Type=Application
+          Categories=Network;WebBrowser;
+          EOF
+
+          # Copia ícone PNG
+          cp AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png DebDir/usr/share/icons/hicolor/256x256/apps/nimbus-browser.png || true
+
+          # Cria arquivo de controle (DEBIAN/control)
+          # A versão no dpkg não permite "v", remover "v" se existir
+          CLEAN_VERSION=$(echo "${{ env.VERSION }}" | sed 's/^v//')
+          cat << EOF > DebDir/DEBIAN/control
+          Package: nimbus-browser
+          Version: ${CLEAN_VERSION}
+          Section: web
+          Priority: optional
+          Architecture: amd64
+          Maintainer: Nimbus Developer <dev@nimbus.local>
+          Description: Nimbus Browser
+           Navegador web moderno, focado em privacidade, feito em Python e QtWebEngine.
+          EOF
+
+          # Constrói o .deb usando fakeroot para permissões corretas
+          fakeroot dpkg-deb --build DebDir dist-installer/nimbus-browser-v${{ env.VERSION }}-amd64.deb
+
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -174,6 +219,7 @@ jobs:
           path: |
             dist-installer/*.AppImage
             dist-installer/*.tar.gz
+            dist-installer/*.deb
           if-no-files-found: error
 
       - name: Create Release
@@ -183,4 +229,5 @@ jobs:
           files: |
             dist-installer/*.AppImage
             dist-installer/*.tar.gz
+            dist-installer/*.deb
           generate_release_notes: true
