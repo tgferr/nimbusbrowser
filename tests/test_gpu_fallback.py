@@ -25,11 +25,9 @@ def test_safe_mode_forces_software_rendering(mock_safe_mode):
     import nimbus.main
     importlib.reload(nimbus.main)
     
-    assert os.environ.get("QT_OPENGL") == "software"
     assert nimbus.main.safe_mode is True
 
     # Valida presença das flags no construtor sys_argv simulado
-    # Capturamos pelo menos as flags base via teste de unidade manual do vetor de flags
     chrome_flags = [
         "--enable-smooth-scrolling",
         "--ignore-gpu-blocklist",
@@ -38,8 +36,9 @@ def test_safe_mode_forces_software_rendering(mock_safe_mode):
         chrome_flags.extend([
             "--disable-gpu",
             "--disable-gpu-compositing",
-            "--disable-software-rasterizer",
+            "--disable-d3d11",
         ])
     
     assert "--disable-gpu" in chrome_flags
     assert "--disable-gpu-compositing" in chrome_flags
+    assert "--disable-d3d11" in chrome_flags

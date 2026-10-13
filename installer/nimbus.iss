@@ -39,6 +39,7 @@ Source: "dist\Nimbus\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs c
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{autoprograms}\{#MyAppName} (Modo de Seguranca)"; Filename: "{app}\{#MyAppExeName}"; Parameters: "--safe-mode"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]

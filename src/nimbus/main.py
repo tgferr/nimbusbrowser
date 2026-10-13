@@ -9,23 +9,18 @@ os.environ.setdefault("QTWEBENGINE_REMOTE_DEBUGGING", "9222")
 # Configurações de estabilidade de renderização Chromium / QtWebEngine
 # Previne tela preta em GPUs integradas/drivers antigos no Windows e Linux
 # Um fallback pode ser forçado pelo usuário através da variável NIMBUS_SAFE_MODE=1
-safe_mode = os.environ.get("NIMBUS_SAFE_MODE", "0") == "1"
+safe_mode = os.environ.get("NIMBUS_SAFE_MODE", "0") == "1" or "--safe-mode" in sys.argv
 
-# Mitigação severa de crashes EGL/Wayland no Linux
+# Mitigação severa de crashes EGL/Wayland/GLX no Linux
 if sys.platform.startswith("linux"):
-    os.environ.setdefault("QT_QPA_PLATFORM", "xcb") # Força X11 ao invés de Wayland (evita falha de EGL nativa)
+    # Garante compatibilidade gráfica mais universal no Linux em empacotamentos (.deb/.AppImage)
+    os.environ.setdefault("QT_QPA_PLATFORM", "xcb") # Força X11 
+    
+    # Se GLX falhar no desktop environment do usuário, forçamos renderização por software nativa do Qt
     if safe_mode:
-        os.environ["QT_OPENGL"] = "software"
+        os.environ["QT_XCB_GL_INTEGRATION"] = "none"
         os.environ["LIBGL_ALWAYS_SOFTWARE"] = "1"
-
-if sys.platform.startswith("win"):
-    if safe_mode:
-        # Fallback extremo para software rasterizer (CPU) se D3D11 falhar
         os.environ["QT_OPENGL"] = "software"
-    else:
-        # Garante renderização D3D11 / ANGLE estável no Windows
-        os.environ.setdefault("QT_OPENGL", "angle")
-        os.environ.setdefault("QT_ANGLE_PLATFORM", "d3d11")
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
@@ -46,16 +41,17 @@ def main() -> int:
     ]
 
     if safe_mode:
-        # Desliga totalmente a composição e a GPU no nível do Chromium
+        # Desliga hardware acceleration e permite CPU render (SwiftShader)
         chrome_flags.extend([
             "--disable-gpu",
             "--disable-gpu-compositing",
-            "--disable-software-rasterizer",
+            "--disable-d3d11",
         ])
     else:
         chrome_flags.append("--enable-zero-copy")
 
-    sys_argv = sys.argv + ["--webEngineArgs"] + chrome_flags
+    sys_argv = [arg for arg in sys.argv if arg != "--safe-mode"]
+    sys_argv = sys_argv + ["--webEngineArgs"] + chrome_flags
 
     app = QApplication(sys_argv)
     app.setApplicationName("Navegador Nimbus")

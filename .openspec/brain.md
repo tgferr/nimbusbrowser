@@ -151,8 +151,8 @@ Aciona as lentes especializadas antes da escrita de código:
 - **QtWebEngine Offscreen Teardown (Linux)**: Em ambientes sem display gráfico rodando pytest com QWebEngine, o processo pode disparar segfault tardio na libc ao tentar destruir singletons C++ do Chromium após o desligamento da aplicação. Utilizar hook `pytest_sessionfinish` no `conftest.py` com saída determinística.
 - **Inno Setup em Subdiretórios**: Scripts Inno Setup (`.iss`) executados de dentro de subpastas (ex: `installer/`) tomam a própria subpasta como diretório base. Definir `SourceDir=..` na seção `[Setup]` para que referências a `assets` e `dist` resolvam a partir da raiz do repositório.
 - **Windows Black Screen (GPU Crash)**: Para evitar falha de tela preta em GPUs integradas/drivers antigos no Windows, forçar backend ANGLE com Direct3D 11 (`QT_OPENGL=angle`, `QT_ANGLE_PLATFORM=d3d11`), flags Chromium `--ignore-gpu-blocklist` e habilitar `AA_ShareOpenGLContexts`.
-- **Linux Wayland/EGL Crashing**: Ambientes modernos de Linux com Wayland frequentemente quebram a inicialização de display EGL no QtWebEngine empacotado. É imperativo forçar a plataforma X11 (`QT_QPA_PLATFORM=xcb`) programaticamente para garantir o fallback visual nativo e evitar `Abortado (imagem do núcleo gravada)`.
-- **NIMBUS_SAFE_MODE**: Flag ambiente que implementa bypass absoluto de GPU (software rasterizer `LIBGL_ALWAYS_SOFTWARE=1` + `--disable-gpu`) garantindo inicialização de resgate.
+- **Linux Wayland/EGL/GLX Crashing**: Ambientes modernos de Linux com Wayland frequentemente quebram a inicialização de display EGL no QtWebEngine empacotado. É imperativo forçar a plataforma X11 (`QT_QPA_PLATFORM=xcb`) programaticamente. Adicionalmente, quando o host não possuir extensões GLX válidas (`Could not initialize GLX`), injetar via Safe Mode: `QT_XCB_GL_INTEGRATION=none` e `QT_OPENGL=software` para desligar totalmente os bindings X11-GL.
+- **NIMBUS_SAFE_MODE**: Flag ambiente que implementa bypass absoluto de GPU garantindo inicialização de resgate.
 
 ### 7.2 Protocolos, DevTools & Compatibilidade
 
