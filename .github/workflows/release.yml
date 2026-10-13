@@ -102,7 +102,7 @@ jobs:
       - name: Install dependencies and build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-glx libegl1
+          sudo apt-get install -y libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-glx libegl1 imagemagick
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
@@ -153,9 +153,8 @@ jobs:
           Categories=Network;WebBrowser;
           EOF
 
-          # Extrai/copia o ícone principal
-          cp assets/nimbus_icon.ico AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png || echo "Ico copy failed, fallback"
-          touch AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png
+          # Extrai/copia o ícone principal covertendo ICO para PNG (formato exigido pelo linuxdeploy)
+          convert assets/nimbus_icon.ico[0] AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png || echo "Ico to png conversion failed, creating empty placeholder" && touch AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png
 
           export QMAKE=/usr/lib/qt5/bin/qmake
           ./linuxdeploy-x86_64.AppImage --appdir AppDir -e AppDir/usr/bin/Nimbus -i AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png -d AppDir/usr/share/applications/nimbus.desktop --output appimage
