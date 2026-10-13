@@ -1,4 +1,18 @@
-# Nimbus Browser ⚡
+<div align="center">
+  <h1>⚡ Nimbus Browser</h1>
+  
+  <h2>📥 DOWNLOAD LATEST VERSION</h2>
+  <a href="https://github.com/tgferr/nimbusbrowser/releases/latest">
+    <img src="https://img.shields.io/badge/Windows_10%2B-Download_.exe-0078D6?style=for-the-badge&logo=windows" alt="Download Windows" />
+  </a>
+  <a href="https://github.com/tgferr/nimbusbrowser/releases/latest">
+    <img src="https://img.shields.io/badge/Linux_Ubuntu-Download_.AppImage-E95420?style=for-the-badge&logo=ubuntu" alt="Download Linux" />
+  </a>
+  <br>
+  <i>Click the badges above and download the <b>.exe</b> or <b>.AppImage</b> file under the <b>Assets</b> section.</i>
+</div>
+
+<br>
 
 <p align="center">
   <img src="assets/nimbus_icon.ico" width="80" height="80" alt="Nimbus Browser Logo" />
@@ -12,26 +26,14 @@
   <a href="https://github.com/tgferr/nimbusbrowser/releases/latest">
     <img src="https://img.shields.io/github/v/release/tgferr/nimbusbrowser?color=0A84FF&label=Latest%20Release" alt="Latest Release" />
   </a>
-  <a href="https://github.com/tgferr/nimbusbrowser/actions/workflows/build-windows.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/tgferr/nimbusbrowser/build-windows.yml?label=Build%20Windows" alt="Build Status" />
+  <a href="https://github.com/tgferr/nimbusbrowser/actions/workflows/release.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/tgferr/nimbusbrowser/release.yml?label=Build%20Status" alt="Build Status" />
   </a>
   <img src="https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white" alt="Python 3.12" />
   <img src="https://img.shields.io/badge/Qt-PySide6%206.12-41CD52.svg?logo=qt&logoColor=white" alt="PySide6" />
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey.svg" alt="Platforms" />
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" />
 </p>
-
----
-
-## 🚀 Download & Installation
-
-### Windows Installer (Direct Download)
-
-You can always download the latest installer directly with:
-
-👉 **[Download Latest Windows Installer (`Nimbus-Setup.exe`)](https://github.com/tgferr/nimbusbrowser/releases/latest/download/Nimbus-Setup-v0.2.0.exe)**
-
-Or visit the **[GitHub Releases Page](https://github.com/tgferr/nimbusbrowser/releases/latest)** to pick any specific release artifact.
 
 ---
 
@@ -106,7 +108,7 @@ PYTHONPATH=src pytest tests/ -v
 
 ```text
 nimbusbrowser/
-├── .github/workflows/       # GitHub Actions CI/CD (PyInstaller + Inno Setup)
+├── .github/workflows/       # GitHub Actions CI/CD (release.yml)
 ├── .openspec/               # Specification-Driven Development (SDD) & Knowledge Base
 │   ├── brain.md             # Nimbus Brain orchestrator and memory
 │   ├── agents/              # Specialized Autonomous Subagents (Architect, QA, Security...)
