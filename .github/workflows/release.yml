@@ -178,7 +178,7 @@ jobs:
 
           # Copia binários
           cp -r dist/Nimbus/* DebDir/usr/lib/nimbus-browser/
-          
+
           # Cria link simbólico para o executável
           ln -s /usr/lib/nimbus-browser/Nimbus DebDir/usr/bin/nimbus-browser
 
