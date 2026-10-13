@@ -8,10 +8,17 @@ os.environ.setdefault("QTWEBENGINE_REMOTE_DEBUGGING", "9222")
 
 # Configurações de estabilidade de renderização Chromium / QtWebEngine
 # Previne tela preta em GPUs integradas/drivers antigos no Windows e Linux
+# Um fallback pode ser forçado pelo usuário através da variável NIMBUS_SAFE_MODE=1
+safe_mode = os.environ.get("NIMBUS_SAFE_MODE", "0") == "1"
+
 if sys.platform.startswith("win"):
-    # Garante renderização D3D11 / ANGLE estável no Windows
-    os.environ.setdefault("QT_OPENGL", "angle")
-    os.environ.setdefault("QT_ANGLE_PLATFORM", "d3d11")
+    if safe_mode:
+        # Fallback extremo para software rasterizer (CPU) se D3D11 falhar
+        os.environ["QT_OPENGL"] = "software"
+    else:
+        # Garante renderização D3D11 / ANGLE estável no Windows
+        os.environ.setdefault("QT_OPENGL", "angle")
+        os.environ.setdefault("QT_ANGLE_PLATFORM", "d3d11")
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
@@ -28,9 +35,19 @@ def main() -> int:
     # Flags Chromium passadas via linha de comando para evitar GPU crashes no Windows
     chrome_flags = [
         "--enable-smooth-scrolling",
-        "--enable-zero-copy",
         "--ignore-gpu-blocklist",
     ]
+
+    if safe_mode:
+        # Desliga totalmente a composição e a GPU no nível do Chromium
+        chrome_flags.extend([
+            "--disable-gpu",
+            "--disable-gpu-compositing",
+            "--disable-software-rasterizer",
+        ])
+    else:
+        chrome_flags.append("--enable-zero-copy")
+
     sys_argv = sys.argv + ["--webEngineArgs"] + chrome_flags
 
     app = QApplication(sys_argv)

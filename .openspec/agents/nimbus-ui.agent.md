@@ -11,6 +11,9 @@ Responsável pelo encapsulamento e interface desktop com browser embutido:
 - Preservação da fluidez da interface: execução de rotinas pesadas fora da UI thread (uso de QThread / Workers assíncronos).
 - Interceptação de esquemas personalizados (`qrc`, `file`, custom schemes) e políticas de download controladas.
 - Encerramento determinístico de processos de renderização e liberação de recursos gráficos.
+- Padrões de layout moderno: estrutura desacoplada `QTabBar` (topo) + `NavigationBar` + `QStackedWidget` (viewport).
+- Botões de aba explícitos com `setTabButton` em vez de seletores pseudo-elementos instáveis do QSS.
+- Menus de contexto escuros customizados (`QMenu` com styling dedicado e integração de comandos nativos).
 
 ## 2. CONTRATO DE SAÍDA OBRIGATÓRIO
 

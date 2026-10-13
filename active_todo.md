@@ -1,9 +1,9 @@
-# Active Todo — Demanda: Modernização Home Page, Design 2026 e Atalhos Chrome
+# Active Todo — Demanda: Destilação do Conhecimento nos Agentes e Brain
 
-- [x] Internalizar Home Page nativa e offline-first (`assets/home.html`)
-- [x] Implementar atalhos de teclado padrão do Google Chrome (`Ctrl+T`, `Ctrl+W`, `Ctrl+Shift+T`, `Ctrl+L`, `Ctrl+Tab`, `Ctrl+1..9`, etc.)
-- [x] Modernizar QSS (Glassmorphism, abas flutuantes, bordas arredondadas e pill search bar)
-- [x] Configurar flags de aceleração e performance de renderização no `NimbusWebView`
-- [x] Suíte de testes atualizada e validada (`make test` -> 10 testes passando 100% verde)
+- [x] Alimentar `.openspec/brain.md` com lições aprendidas (GPU Windows ANGLE, DevTools 9222, CI Node 24, QTabBar custom close buttons)
+- [x] Atualizar escopo e diretrizes do `nimbus-architect.agent.md` (estabilidade gráfica D3D11 e offline-first)
+- [x] Atualizar escopo e diretrizes do `nimbus-protocols.agent.md` (DevTools nativo e porta de depuração remota)
+- [x] Atualizar escopo e diretrizes do `nimbus-ui.agent.md` (desacoplamento TabBar + StackedWidget e menu M2 escuro)
+- [x] Validar consistência do ecossistema e testes unitários (`make test`)
 
-**Status**: Modernização visual e funcional 100% concluída.
+**Status**: Agentes e Brain 100% atualizados com o aprendizado acumulado.

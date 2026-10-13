@@ -11,6 +11,8 @@ Responsável pelo controle direto de navegadores em nível de protocolo:
 - Implementação bidirecional cross-browser via WebDriver BiDi (especialmente para Firefox).
 - Gestão de sessões DevTools MCP para integração com ferramentas de depuração assistida.
 - Captura de métricas de performance da engine (DOM trees, console logs estruturados, memory heaps).
+- Habilitação de DevTools nativo no QtWebEngine via porta de depuração remota (`QTWEBENGINE_REMOTE_DEBUGGING=9222`) e vinculação direta de páginas com `setDevToolsPage`.
+- Suporte a inspeção DOM ao vivo via `QWebEnginePage.WebAction.InspectElement`.
 
 ## 2. CONTRATO DE SAÍDA OBRIGATÓRIO
 

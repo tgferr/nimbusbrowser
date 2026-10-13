@@ -1,0 +1,94 @@
+name: Build Ubuntu AppImage
+
+on:
+  push:
+    branches: [main, master]
+    tags:
+      - "v*"
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies and build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-glx libegl1
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Run Tests
+        env:
+          PYTHONPATH: src
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          pytest tests/ -v
+
+      - name: Build executable with PyInstaller
+        run: |
+          pyinstaller --noconfirm nimbus.spec
+
+      - name: Download linuxdeploy and linuxdeploy-plugin-qt
+        run: |
+          wget -c -nv "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+          wget -c -nv "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+          chmod a+x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-qt-x86_64.AppImage
+
+      - name: Package AppImage
+        run: |
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+
+          # Copia arquivos compilados do PyInstaller
+          cp -r dist/Nimbus/* AppDir/usr/bin/
+
+          # Desktop entry
+          cat << 'EOF' > AppDir/usr/share/applications/nimbus.desktop
+          [Desktop Entry]
+          Name=Nimbus Browser
+          Exec=Nimbus
+          Icon=nimbus
+          Type=Application
+          Categories=Network;WebBrowser;
+          EOF
+
+          # Extrai/copia o ícone principal
+          cp assets/nimbus_icon.ico AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png || echo "Ico copy failed, fallback"
+          touch AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png
+
+          export QMAKE=/usr/lib/qt5/bin/qmake
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir -e AppDir/usr/bin/Nimbus -i AppDir/usr/share/icons/hicolor/256x256/apps/nimbus.png -d AppDir/usr/share/applications/nimbus.desktop --output appimage
+          mkdir -p dist-installer
+          mv Nimbus_Browser*.AppImage dist-installer/Nimbus-Browser-v0.2.2-x86_64.AppImage
+
+      - name: Upload AppImage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nimbus-Ubuntu-AppImage
+          path: dist-installer/*.AppImage
+          if-no-files-found: error
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-installer/*.AppImage
+          generate_release_notes: true

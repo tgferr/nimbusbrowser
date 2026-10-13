@@ -8,7 +8,7 @@
 
 ## 1. PROPÓSITO E DIRETRIZES FUNDAMENTAIS
 
-Este arquivo é a **ÚNICA FONTE DE VERDADE**, memória viva e orquestrador supremo de desenvolvimento do repositório **Nimbus**. Governa o ciclo de vida OpenSpec, delega tarefas aos subagentes especialistas em `agents/` e gerencia a destilação cumulativa de conhecimento.
+Este arquivo é a **ÚNICA FONTE DE VERDADE**, memória viva e orquestrador supremo de desenvolvimento do repositório **Nimbus**. Governa o ciclo de vida OpenSpec, delega tarefas aos subagentes especialistas em `.openspec/agents/` e gerencia a destilação cumulativa de conhecimento.
 
 ### ⛔ DIRETIVAS RÍGIDAS DE SEGURANÇA (HARD CONSTRAINTS)
 
@@ -55,16 +55,16 @@ Sempre prefixar comandos shell com `rtk`:
 
 ## 3. CATÁLOGO DE SUBAGENTES ESPECIALISTAS DELEGADOS
 
-O Nimbus Brain delega a execução especializada para os subagentes residentes em `agents/`:
+O Nimbus Brain delega a execução especializada para os subagentes residentes em `.openspec/agents/`:
 
-| Subagente      | Arquivo                             | Especialidade / Escopo                                                        |
-| :------------- | :---------------------------------- | :---------------------------------------------------------------------------- |
-| **Architect**  | `agents/nimbus-architect.agent.md`  | Topologia de browser, fronteiras de processos, IPC e isolamento de estado.    |
-| **Automation** | `agents/nimbus-automation.agent.md` | Playwright, Selenium, Crawl4AI, locators semânticos, auto-waiting e anti-bot. |
-| **Protocols**  | `agents/nimbus-protocols.agent.md`  | Chrome DevTools Protocol (CDP), WebDriver BiDi, DevTools MCP e rede.          |
-| **Security**   | `agents/nimbus-security.agent.md`   | Prevenção SSRF, isolamento de perfis, sandbox, sanitização de logs e TLS.     |
-| **UI**         | `agents/nimbus-ui.agent.md`         | Aplicações desktop com PySide6 + `QtWebEngineWidgets`, abas e UI threads.     |
-| **QA**         | `agents/nimbus-qa.agent.md`         | Testes E2E, detecção de flakiness, benchmarks de latência/RAM e traces.       |
+| Subagente      | Arquivo                                       | Especialidade / Escopo                                                        |
+| :------------- | :-------------------------------------------- | :---------------------------------------------------------------------------- |
+| **Architect**  | `.openspec/agents/nimbus-architect.agent.md`  | Topologia de browser, fronteiras de processos, IPC e isolamento de estado.    |
+| **Automation** | `.openspec/agents/nimbus-automation.agent.md` | Playwright, Selenium, Crawl4AI, locators semânticos, auto-waiting e anti-bot. |
+| **Protocols**  | `.openspec/agents/nimbus-protocols.agent.md`  | Chrome DevTools Protocol (CDP), WebDriver BiDi, DevTools MCP e rede.          |
+| **Security**   | `.openspec/agents/nimbus-security.agent.md`   | Prevenção SSRF, isolamento de perfis, sandbox, sanitização de logs e TLS.     |
+| **UI**         | `.openspec/agents/nimbus-ui.agent.md`         | Aplicações desktop com PySide6 + `QtWebEngineWidgets`, abas e UI threads.     |
+| **QA**         | `.openspec/agents/nimbus-qa.agent.md`         | Testes E2E, detecção de flakiness, benchmarks de latência/RAM e traces.       |
 
 ---
 
@@ -96,7 +96,7 @@ Aciona as lentes especializadas antes da escrita de código:
 
 ### 4.3 `/execute`
 
-1. Delega a implementação cirúrgica ao subagente pertinente em `agents/`.
+1. Delega a implementação cirúrgica ao subagente pertinente em `.openspec/agents/`.
 2. Respeita deltas estritos (`ADDED`, `MODIFIED`, `REMOVED`).
 3. Executa suíte de testes com prefixo `rtk`.
 4. Garante zero prints soltos, zero dados sensíveis em logs e zero `time.sleep()`.
@@ -117,8 +117,10 @@ Aciona as lentes especializadas antes da escrita de código:
 - **Padrão**: Clean Architecture + Ports & Adapters para protocolos de browser
 - **Estrutura de Pastas Padrão**:
   ```text
-  .openspec/                # Governança OpenSpec, brain.md e templates
-  agents/                   # Subagentes especialistas canônicos
+  .openspec/                # Governança OpenSpec, brain.md, templates e agents/
+  ├── brain.md              # Orquestrador central e memória viva
+  ├── templates/            # Templates de MR e especificações
+  └── agents/               # Subagentes especialistas canônicos
   src/                      # Código de produção
   ├── core/                 # Entidades, domain models e interfaces abstratas
   ├── engine/               # Drivers de browser (Playwright, CDP, BiDi)
@@ -148,16 +150,22 @@ Aciona as lentes especializadas antes da escrita de código:
 - **Processos Zumbis**: Fechar explicitamente browser e contexto em blocos `finally` ou context managers assíncronos para evitar instâncias órfãs de Chromium/Gecko consumindo CPU e memória.
 - **QtWebEngine Offscreen Teardown (Linux)**: Em ambientes sem display gráfico rodando pytest com QWebEngine, o processo pode disparar segfault tardio na libc ao tentar destruir singletons C++ do Chromium após o desligamento da aplicação. Utilizar hook `pytest_sessionfinish` no `conftest.py` com saída determinística.
 - **Inno Setup em Subdiretórios**: Scripts Inno Setup (`.iss`) executados de dentro de subpastas (ex: `installer/`) tomam a própria subpasta como diretório base. Definir `SourceDir=..` na seção `[Setup]` para que referências a `assets` e `dist` resolvam a partir da raiz do repositório.
+- **Windows Black Screen (GPU Crash)**: Para evitar falha de tela preta em GPUs integradas/drivers antigos no Windows, forçar backend ANGLE com Direct3D 11 (`QT_OPENGL=angle`, `QT_ANGLE_PLATFORM=d3d11`), flags Chromium `--ignore-gpu-blocklist` e habilitar `AA_ShareOpenGLContexts`.
+- **Node 24 Deprecation em GitHub Actions**: Runners Windows que forçam Node 24 em actions legadas Node 20 requerem variável de ambiente `ACTIONS_RUNNER_FORCE_NODE24: "true"` no workflow para suprimir warnings de execução.
 
-### 7.2 Protocolos & Compatibilidade
+### 7.2 Protocolos, DevTools & Compatibilidade
 
+- **Chromium DevTools Integrado no QtWebEngine**: A ação nativa `InspectElement` sem host abre `about:blank`. Para habilitar DevTools funcional, deve-se definir `QTWEBENGINE_REMOTE_DEBUGGING=9222` e vincular uma janela/view dedicada com `page.setDevToolsPage(dev_page)`.
 - **Firefox 141+**: Protocolo CDP descontinuado; adotar estritamente WebDriver BiDi para fluxos remotos multi-browser em Firefox.
 - **Chromium / Edge**: Utilizar CDP para inspeções aprofundadas de rede e performance não cobertas pela API padrão do Playwright.
 
 ### 7.3 Segurança & Rede
 
 - **DNS Rebinding**: A validação de SSRF deve inspecionar o IP resolvido no momento da requisição, não apenas a string do hostname informada.
+- **Isolamento de Downloads**: Manipular `profile.downloadRequested` com confirmação via `QFileDialog` para evitar download automático silencioso de arquivos arbitrários.
 
-### 7.4 Testes & Qualidade
+### 7.4 Testes, UI/UX & Qualidade
 
 - **Listas Dinâmicas**: Nunca chamar `locator.all()` imediatamente após mutação de DOM; aguardar estabilização do container com `expect(locator).to_be_visible()`.
+- **Botões em QTabBar**: Evitar estilizar `::close-button` via QSS puro devido a inconsistências de renderização entre plataformas. Usar `tab_bar.setTabButton(idx, RightSide, btn)` com `QPushButton` explícito para controle total de visibilidade, posicionamento e eventos.
+- **Desacoplamento QTabBar + QStackedWidget**: No Qt, estruturar layout com `QTabBar` superior e `QStackedWidget` para conteúdo permite inserir barras de navegação e controles entre as abas e o viewport web, mantendo paridade com UX moderno do Chrome/Edge.

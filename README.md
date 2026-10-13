@@ -108,7 +108,9 @@ PYTHONPATH=src pytest tests/ -v
 nimbusbrowser/
 ├── .github/workflows/       # GitHub Actions CI/CD (PyInstaller + Inno Setup)
 ├── .openspec/               # Specification-Driven Development (SDD) & Knowledge Base
-├── agents/                  # Specialized Autonomous Subagents (Architect, QA, Security...)
+│   ├── brain.md             # Nimbus Brain orchestrator and memory
+│   ├── agents/              # Specialized Autonomous Subagents (Architect, QA, Security...)
+│   └── templates/           # Delivery and MR templates
 ├── assets/                  # Icons, offline pages, and bundled home UI
 │   ├── home.html            # Native offline-first glassmorphic home page
 │   └── nimbus_icon.ico      # Application icon

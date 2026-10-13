@@ -10,6 +10,8 @@ Responsável por definir e manter as fronteiras estruturais da aplicação:
 - Separação entre Application Shell, UI Window, Browser Session, Navigation Controller e Automation Engine.
 - Estratégias de IPC seguro entre UI e processos do engine.
 - Gestão de ciclo de vida de abas, crashes de renderer e descarte determinístico de recursos.
+- Configuração de estabilidade gráfica multiplataforma: parametrização ANGLE Direct3D 11 (`QT_OPENGL=angle`, `QT_ANGLE_PLATFORM=d3d11`) e flags de inicialização do processo Chromium (`--ignore-gpu-blocklist`, `--enable-zero-copy`) para mitigar crashes de GPU e telas pretas.
+- Padrão Offline-First: resolução de home pages locais em assets embutidos em vez de dependências de rede externas lentas e frágeis.
 
 ## 2. CONTRATO DE SAÍDA OBRIGATÓRIO
 
