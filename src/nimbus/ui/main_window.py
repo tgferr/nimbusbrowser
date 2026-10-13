@@ -219,6 +219,14 @@ class NimbusMainWindow(QMainWindow):
         # Adiciona aba visual no QTabBar e página no QStackedWidget
         self.stack_widget.addWidget(web_view)
         idx = self.tab_bar.addTab("Nova Aba")
+
+        # Botão fechar customizado ('×') para evitar bugs de rendering de close-button do QSS nativo
+        close_btn = QPushButton("×")
+        close_btn.setProperty("class", "TabCloseButton")
+        close_btn.setToolTip("Fechar guia (Ctrl+W)")
+        close_btn.clicked.connect(lambda _, w=web_view: self._close_tab_by_widget(w))
+        self.tab_bar.setTabButton(idx, QTabBar.ButtonPosition.RightSide, close_btn)
+
         self.tab_bar.setCurrentIndex(idx)
         self.stack_widget.setCurrentIndex(idx)
 
@@ -226,6 +234,11 @@ class NimbusMainWindow(QMainWindow):
         target_url = normalize_input_url(url)
         web_view.setUrl(QUrl(target_url))
         return web_view
+
+    def _close_tab_by_widget(self, web_view: NimbusWebView) -> None:
+        idx = self.stack_widget.indexOf(web_view)
+        if idx != -1:
+            self._on_close_tab(idx)
 
     def get_current_web_view(self) -> Optional[NimbusWebView]:
         """Retorna o WebView da aba ativa no momento."""

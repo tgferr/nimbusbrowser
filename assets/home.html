@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -7,8 +7,8 @@
     <style>
       :root {
         --bg: #0b0c10;
-        --card-bg: rgba(26, 29, 36, 0.7);
-        --card-hover: rgba(38, 43, 54, 0.9);
+        --card-bg: rgba(26, 29, 36, 0.75);
+        --card-hover: rgba(38, 43, 54, 0.95);
         --border: rgba(255, 255, 255, 0.08);
         --accent: #0a84ff;
         --accent-glow: rgba(10, 132, 255, 0.35);
@@ -37,7 +37,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        padding-top: 10vh;
+        padding-top: 8vh;
+        padding-bottom: 80px;
         overflow-x: hidden;
       }
 
@@ -45,26 +46,26 @@
         display: flex;
         align-items: center;
         gap: 14px;
-        margin-bottom: 36px;
+        margin-bottom: 32px;
         user-select: none;
       }
 
       .brand-logo {
-        width: 56px;
-        height: 56px;
+        width: 54px;
+        height: 54px;
         border-radius: 16px;
         background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 800;
-        font-size: 28px;
+        font-size: 26px;
         color: #fff;
         box-shadow: 0 10px 30px var(--accent-glow);
       }
 
       .brand-title {
-        font-size: 38px;
+        font-size: 36px;
         font-weight: 700;
         letter-spacing: -0.5px;
         background: linear-gradient(180deg, #ffffff 30%, #a4b3c6 100%);
@@ -76,7 +77,7 @@
         width: 90%;
         max-width: 680px;
         position: relative;
-        margin-bottom: 48px;
+        margin-bottom: 40px;
       }
 
       .search-bar {
@@ -120,7 +121,7 @@
         font-size: 12px;
         background: rgba(255, 255, 255, 0.08);
         color: var(--muted);
-        padding: 4px 10px;
+        padding: 5px 12px;
         border-radius: 12px;
         cursor: pointer;
         user-select: none;
@@ -132,11 +133,41 @@
         color: var(--text);
       }
 
+      /* Container dos Atalhos (Speed Dials) */
+      .dials-container {
+        width: 90%;
+        max-width: 720px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .dials-header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 0 4px;
+      }
+
+      .dials-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
       .dials-grid {
         display: grid;
-        grid-template-columns: repeat(4, 110px);
-        gap: 20px;
-        max-width: 540px;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 16px;
+        width: 100%;
+      }
+
+      .dial-wrapper {
+        position: relative;
       }
 
       .dial-card {
@@ -149,23 +180,24 @@
         background: var(--card-bg);
         backdrop-filter: blur(16px);
         border: 1px solid var(--border);
-        border-radius: 20px;
+        border-radius: 18px;
         text-decoration: none;
         color: var(--text);
-        transition: all 0.2s ease;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         user-select: none;
+        width: 100%;
       }
 
       .dial-card:hover {
         background: var(--card-hover);
-        transform: translateY(-4px);
+        transform: translateY(-3px);
         border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
       }
 
       .dial-icon {
-        width: 44px;
-        height: 44px;
+        width: 42px;
+        height: 42px;
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -176,22 +208,178 @@
       }
 
       .dial-name {
-        font-size: 13px;
+        font-size: 12px;
         color: var(--muted);
         font-weight: 500;
+        max-width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
       }
 
       .dial-card:hover .dial-name {
         color: var(--text);
       }
 
+      /* Botão 'X' para remover atalho */
+      .dial-remove-btn {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #2a2e39;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #ff5c5c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.2s;
+        z-index: 5;
+      }
+
+      .dial-wrapper:hover .dial-remove-btn {
+        opacity: 1;
+      }
+
+      .dial-remove-btn:hover {
+        background: #ff453a;
+        color: #ffffff;
+        transform: scale(1.15);
+      }
+
+      /* Card de Adicionar Novo Atalho '+' */
+      .dial-add-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 105px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed rgba(255, 255, 255, 0.16);
+        border-radius: 18px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+      }
+
+      .dial-add-card:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: translateY(-3px);
+      }
+
+      .dial-add-icon {
+        font-size: 26px;
+        font-weight: 300;
+      }
+
+      .dial-add-text {
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      /* Modal de Novo Atalho */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+
+      .modal-card {
+        background: #181b22;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 420px;
+        padding: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 18px;
+      }
+
+      .modal-input {
+        width: 100%;
+        background: #222631;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-size: 14px;
+        margin-bottom: 14px;
+        outline: none;
+      }
+
+      .modal-input:focus {
+        border-color: var(--accent);
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        padding: 8px 18px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
+
+      .btn-cancel {
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .btn-cancel:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .btn-save {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .btn-save:hover {
+        background: #0077f0;
+      }
+
+      /* Dicas de Atalhos de Teclado */
       .footer-hint {
         position: fixed;
         bottom: 24px;
         display: flex;
         align-items: center;
         gap: 12px;
-        background: rgba(18, 22, 30, 0.75);
+        background: rgba(18, 22, 30, 0.85);
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.12);
         padding: 8px 18px;
@@ -252,44 +440,36 @@
       </form>
     </div>
 
-    <div class="dials-grid">
-      <a href="https://github.com" class="dial-card">
-        <div class="dial-icon" style="background: #24292e">⚡</div>
-        <span class="dial-name">GitHub</span>
-      </a>
-      <a href="https://youtube.com" class="dial-card">
-        <div class="dial-icon" style="background: #ff0000">▶</div>
-        <span class="dial-name">YouTube</span>
-      </a>
-      <a href="https://reddit.com" class="dial-card">
-        <div class="dial-icon" style="background: #ff4500">👽</div>
-        <span class="dial-name">Reddit</span>
-      </a>
-      <a href="https://chatgpt.com" class="dial-card">
-        <div class="dial-icon" style="background: #10a37f">✦</div>
-        <span class="dial-name">ChatGPT</span>
-      </a>
-      <a href="https://wikipedia.org" class="dial-card">
-        <div class="dial-icon" style="background: #333333">W</div>
-        <span class="dial-name">Wikipédia</span>
-      </a>
-      <a href="https://news.ycombinator.com" class="dial-card">
-        <div class="dial-icon" style="background: #ff6600">Y</div>
-        <span class="dial-name">Hacker News</span>
-      </a>
-      <a href="https://x.com" class="dial-card">
-        <div
-          class="dial-icon"
-          style="background: #000000; border: 1px solid #333"
-        >
-          𝕏
+    <div class="dials-container">
+      <div class="dials-header">
+        <span class="dials-title">Atalhos Frequentes</span>
+      </div>
+      <div class="dials-grid" id="dials-grid">
+        <!-- Renderizado dinamicamente via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Modal Adicionar Atalho -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBg(event)">
+      <div class="modal-card">
+        <div class="modal-title">Adicionar Atalho</div>
+        <input
+          type="text"
+          id="new-title"
+          class="modal-input"
+          placeholder="Nome (ex: GitHub, Notícias)"
+        />
+        <input
+          type="text"
+          id="new-url"
+          class="modal-input"
+          placeholder="URL (ex: https://github.com)"
+        />
+        <div class="modal-actions">
+          <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn-save" onclick="saveNewDial()">Salvar</button>
         </div>
-        <span class="dial-name">X</span>
-      </a>
-      <a href="https://duckduckgo.com" class="dial-card">
-        <div class="dial-icon" style="background: #de5833">🦆</div>
-        <span class="dial-name">DuckDuckGo</span>
-      </a>
+      </div>
     </div>
 
     <div class="footer-hint">
@@ -303,6 +483,137 @@
     </div>
 
     <script>
+      const STORAGE_KEY = "nimbus_speed_dials_v1";
+
+      const defaultDials = [
+        { name: "GitHub", url: "https://github.com", icon: "⚡", bg: "#24292e" },
+        { name: "YouTube", url: "https://youtube.com", icon: "▶", bg: "#ff0000" },
+        { name: "Reddit", url: "https://reddit.com", icon: "👽", bg: "#ff4500" },
+        { name: "ChatGPT", url: "https://chatgpt.com", icon: "✦", bg: "#10a37f" },
+        { name: "Wikipédia", url: "https://wikipedia.org", icon: "W", bg: "#333333" },
+        { name: "Hacker News", url: "https://news.ycombinator.com", icon: "Y", bg: "#ff6600" },
+        { name: "X", url: "https://x.com", icon: "𝕏", bg: "#000000" },
+        { name: "DuckDuckGo", url: "https://duckduckgo.com", icon: "🦆", bg: "#de5833" },
+      ];
+
+      function loadDials() {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (stored) {
+            return JSON.parse(stored);
+          }
+        } catch (e) {}
+        return defaultDials;
+      }
+
+      function saveDials(dials) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dials));
+        } catch (e) {}
+      }
+
+      function renderDials() {
+        const grid = document.getElementById("dials-grid");
+        grid.innerHTML = "";
+        const dials = loadDials();
+
+        dials.forEach((dial, index) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "dial-wrapper";
+
+          const card = document.createElement("a");
+          card.className = "dial-card";
+          card.href = dial.url;
+
+          const iconDiv = document.createElement("div");
+          iconDiv.className = "dial-icon";
+          iconDiv.style.background = dial.bg || "#2c313d";
+          iconDiv.textContent = dial.icon || dial.name.charAt(0).toUpperCase();
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "dial-name";
+          nameSpan.textContent = dial.name;
+
+          card.appendChild(iconDiv);
+          card.appendChild(nameSpan);
+
+          // Botão remover 'X'
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "dial-remove-btn";
+          removeBtn.innerHTML = "&times;";
+          removeBtn.title = "Remover atalho";
+          removeBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            removeDial(index);
+          };
+
+          wrapper.appendChild(card);
+          wrapper.appendChild(removeBtn);
+          grid.appendChild(wrapper);
+        });
+
+        // Botão Adicionar '+'
+        const addCard = document.createElement("div");
+        addCard.className = "dial-add-card";
+        addCard.onclick = openModal;
+        addCard.innerHTML = `
+          <div class="dial-add-icon">+</div>
+          <div class="dial-add-text">Adicionar</div>
+        `;
+        grid.appendChild(addCard);
+      }
+
+      function removeDial(index) {
+        const dials = loadDials();
+        dials.splice(index, 1);
+        saveDials(dials);
+        renderDials();
+      }
+
+      function openModal() {
+        document.getElementById("new-title").value = "";
+        document.getElementById("new-url").value = "";
+        document.getElementById("modal-overlay").style.display = "flex";
+        setTimeout(() => document.getElementById("new-title").focus(), 50);
+      }
+
+      function closeModal() {
+        document.getElementById("modal-overlay").style.display = "none";
+      }
+
+      function closeModalOnBg(e) {
+        if (e.target.id === "modal-overlay") {
+          closeModal();
+        }
+      }
+
+      function saveNewDial() {
+        const name = document.getElementById("new-title").value.trim();
+        let url = document.getElementById("new-url").value.trim();
+        if (!name || !url) return;
+
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+          url = "https://" + url;
+        }
+
+        const colors = ["#0a84ff", "#5e5ce6", "#30d158", "#ff9f0a", "#bf5af2", "#64d2ff"];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        const dials = loadDials();
+        dials.push({
+          name: name,
+          url: url,
+          icon: name.charAt(0).toUpperCase(),
+          bg: randomColor,
+        });
+
+        saveDials(dials);
+        closeModal();
+        renderDials();
+      }
+
+      // Motores de busca
       const engines = [
         { name: "Google", url: "https://www.google.com/search?q=" },
         { name: "DuckDuckGo", url: "https://duckduckgo.com/?q=" },
@@ -332,6 +643,9 @@
             engines[currentEngine].url + encodeURIComponent(query);
         }
       }
+
+      // Inicializa os atalhos ao carregar
+      renderDials();
     </script>
   </body>
 </html>
