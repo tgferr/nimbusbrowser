@@ -1,17 +1,56 @@
 """Definições e constantes centrais do Navegador Nimbus."""
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+
+def _resolve_assets_dir() -> Path:
+    """
+    Resolve o diretório de assets de forma compatível com:
+    1. Desenvolvimento local (Python puro / venv)
+    2. Binário empacotado PyInstaller (Windows .exe e Linux ELF)
+    """
+    # PyInstaller define sys.frozen = True e sys._MEIPASS aponta para a pasta descompactada
+    if getattr(sys, "frozen", False):
+        if hasattr(sys, "_MEIPASS"):
+            meipass_assets = Path(sys._MEIPASS) / "assets"
+            if meipass_assets.exists():
+                return meipass_assets
+
+        # No modo --onedir, sys.executable fica em dist/Nimbus/Nimbus e os assets podem estar em _internal/assets ou assets/
+        exe_dir = Path(sys.executable).resolve().parent
+        for candidate in (exe_dir / "assets", exe_dir / "_internal" / "assets"):
+            if candidate.exists():
+                return candidate
+
+    # Modo desenvolvimento (src/nimbus/core/constants.py -> raiz/assets)
+    dev_base = Path(__file__).resolve().parent.parent.parent.parent
+    dev_assets = dev_base / "assets"
+    if dev_assets.exists():
+        return dev_assets
+
+    return dev_base / "assets"
+
+
 # Caminhos de Assets
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-ASSETS_DIR = BASE_DIR / "assets"
+ASSETS_DIR = _resolve_assets_dir()
 ICON_PATH = ASSETS_DIR / "nimbus_icon.ico"
 OFFLINE_HOME_PATH = ASSETS_DIR / "offline_home.html"
 HOME_HTML_PATH = ASSETS_DIR / "home.html"
 
+
+def get_default_home_url() -> str:
+    """Retorna a URL inicial resolvida em runtime."""
+    assets = _resolve_assets_dir()
+    home_file = assets / "home.html"
+    if home_file.exists():
+        return home_file.as_uri()
+    return "about:blank"
+
+
 # URLs Padrão (Local First)
-DEFAULT_HOME_URL = HOME_HTML_PATH.as_uri() if HOME_HTML_PATH.exists() else "about:blank"
+DEFAULT_HOME_URL = get_default_home_url()
 NEW_TAB_URL = DEFAULT_HOME_URL
 
 

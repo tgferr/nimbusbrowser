@@ -209,8 +209,8 @@ jobs:
            Navegador web moderno, focado em privacidade, feito em Python e QtWebEngine.
           EOF
 
-          # Constrói o .deb usando fakeroot para permissões corretas
-          fakeroot dpkg-deb --build DebDir dist-installer/nimbus-browser-v${{ env.VERSION }}-amd64.deb
+          # Constrói o .deb usando fakeroot para permissões corretas (força compressão gzip suportada pelo dpkg legacy/apt universal)
+          fakeroot dpkg-deb -Zgzip --build DebDir dist-installer/nimbus-browser-v${{ env.VERSION }}-amd64.deb
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
