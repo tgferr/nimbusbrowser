@@ -1,0 +1,30 @@
+# Ambientes Python e Venv
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# PyInstaller e Builds
+build/
+dist/
+dist-installer/
+*.spec.bak
+
+# Testes e Cobertura
+.pytest_cache/
+coverage/
+.coverage
+*.coverage.xml
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
