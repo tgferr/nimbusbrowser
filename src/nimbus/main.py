@@ -3,6 +3,9 @@
 import os
 import sys
 
+# Porta de debug remoto Chromium para permitir DevTools completo e inspecionar elementos
+os.environ.setdefault("QTWEBENGINE_REMOTE_DEBUGGING", "9222")
+
 # Configurações de estabilidade de renderização Chromium / QtWebEngine
 # Previne tela preta em GPUs integradas/drivers antigos no Windows e Linux
 if sys.platform.startswith("win"):

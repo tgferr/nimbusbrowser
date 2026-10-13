@@ -1,14 +1,17 @@
 """Janela principal do Navegador Nimbus em PySide6."""
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 from PySide6.QtCore import QUrl, Qt
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWebEngineCore import QWebEngineProfile
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QMainWindow,
+    QMenu,
     QProgressBar,
     QPushButton,
+    QSplitter,
     QStackedWidget,
     QTabBar,
     QVBoxLayout,
@@ -39,6 +42,7 @@ class NimbusMainWindow(QMainWindow):
         self._tab_manager = TabManager()
         self._profile: Optional[QWebEngineProfile] = None
         self._closed_tabs_history: List[str] = []
+        self._devtools_views: Dict[str, QWebEngineView] = {}
 
         self._setup_window()
         self._setup_downloads()
@@ -117,6 +121,9 @@ class NimbusMainWindow(QMainWindow):
         self.nav_bar.reload_requested.connect(self._on_reload)
         self.nav_bar.home_requested.connect(self._on_home)
         self.nav_bar.url_submitted.connect(self._on_navigate_to_url)
+        self.nav_bar.devtools_requested.connect(self._on_toggle_current_devtools)
+        self.nav_bar.downloads_requested.connect(self._on_save_page)
+        self.nav_bar.menu_requested.connect(self._show_app_menu)
         root_layout.addWidget(self.nav_bar)
 
         # 3. Barra de Progresso
@@ -143,6 +150,13 @@ class NimbusMainWindow(QMainWindow):
 
         # Ctrl+Shift+T: Reabrir Última Aba Fechada
         QShortcut(QKeySequence("Ctrl+Shift+T"), self, activated=self._reopen_last_closed_tab)
+
+        # F12 / Ctrl+Shift+I: Alternar DevTools
+        QShortcut(QKeySequence("F12"), self, activated=self._on_toggle_current_devtools)
+        QShortcut(QKeySequence("Ctrl+Shift+I"), self, activated=self._on_toggle_current_devtools)
+
+        # Ctrl+S: Salvar Página
+        QShortcut(QKeySequence("Ctrl+S"), self, activated=self._on_save_page)
 
         # Ctrl+R / F5: Recarregar
         QShortcut(QKeySequence("Ctrl+R"), self, activated=self._on_reload)
@@ -295,6 +309,9 @@ class NimbusMainWindow(QMainWindow):
             self._tab_manager.remove_tab(widget.tab_id)
             self.tab_bar.removeTab(index)
             self.stack_widget.removeWidget(widget)
+            if widget.tab_id in self._devtools_views:
+                dev = self._devtools_views.pop(widget.tab_id)
+                dev.deleteLater()
             widget.dispose()
 
     def _on_back(self) -> None:
@@ -347,3 +364,73 @@ class NimbusMainWindow(QMainWindow):
             self.progress_bar.show()
         else:
             self.progress_bar.hide()
+
+    def _on_toggle_current_devtools(self) -> None:
+        """Abre ou fecha o DevTools para o WebView atualmente ativo."""
+        web_view = self.get_current_web_view()
+        if web_view:
+            self.toggle_devtools(web_view)
+
+    def toggle_devtools(self, web_view: NimbusWebView) -> None:
+        """Abre o DevTools nativo do Chromium em uma janela dedicada ou foca a existente."""
+        tab_id = web_view.tab_id
+        if tab_id in self._devtools_views and not self._devtools_views[tab_id].isHidden():
+            # Se já está aberto, traz para frente
+            dev_view = self._devtools_views[tab_id]
+            dev_view.raise_()
+            dev_view.activateWindow()
+            return
+
+        dev_view = QWebEngineView()
+        dev_view.setWindowTitle(f"DevTools — {web_view.title() or 'Nimbus'}")
+        dev_view.resize(950, 650)
+        web_view.page().setDevToolsPage(dev_view.page())
+        dev_view.show()
+        self._devtools_views[tab_id] = dev_view
+
+    def _on_save_page(self) -> None:
+        """Dispara a ação de salvar página do WebView ativo."""
+        from PySide6.QtWebEngineCore import QWebEnginePage
+        web_view = self.get_current_web_view()
+        if web_view:
+            web_view.page().triggerAction(QWebEnginePage.WebAction.SavePage)
+
+    def _show_app_menu(self) -> None:
+        """Exibe o menu de opções do canto superior direito."""
+        menu = QMenu(self)
+        menu.setObjectName("NimbusContextMenu")
+
+        act_new_tab = menu.addAction("Nova Guia\tCtrl+T")
+        act_new_tab.triggered.connect(lambda: self.create_new_tab(self._config.default_home_url))
+
+        act_reopen = menu.addAction("Reabrir Guia Fechada\tCtrl+Shift+T")
+        act_reopen.setEnabled(len(self._closed_tabs_history) > 0)
+        act_reopen.triggered.connect(self._reopen_last_closed_tab)
+
+        menu.addSeparator()
+
+        act_save = menu.addAction("Salvar Página Como...\tCtrl+S")
+        act_save.triggered.connect(self._on_save_page)
+
+        act_devtools = menu.addAction("Ferramentas do Desenvolvedor\tF12")
+        act_devtools.triggered.connect(self._on_toggle_current_devtools)
+
+        menu.addSeparator()
+
+        act_about = menu.addAction("Sobre o Nimbus")
+        act_about.triggered.connect(self._show_about_dialog)
+
+        # Posiciona abaixo do botão de menu
+        btn_pos = self.nav_bar.menu_button.mapToGlobal(self.nav_bar.menu_button.rect().bottomLeft())
+        menu.exec(btn_pos)
+
+    def _show_about_dialog(self) -> None:
+        """Apresenta caixa Sobre moderna."""
+        from PySide6.QtWidgets import QMessageBox
+        QMessageBox.about(
+            self,
+            "Sobre o Nimbus Browser",
+            "<b>Navegador Nimbus</b> v0.2.1<br>"
+            "Construído em Python com QtWebEngine (Chromium).<br><br>"
+            "Moderno, rápido e com privacidade em primeiro lugar."
+        )

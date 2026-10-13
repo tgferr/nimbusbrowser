@@ -17,6 +17,10 @@ class NavigationBar(QWidget):
     reload_requested = Signal()
     home_requested = Signal()
     url_submitted = Signal(str)
+    new_tab_requested = Signal()
+    devtools_requested = Signal()
+    downloads_requested = Signal()
+    menu_requested = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -31,21 +35,21 @@ class NavigationBar(QWidget):
         # Botão Voltar (←)
         self.back_button = QPushButton("◀")
         self.back_button.setProperty("class", "NavButton")
-        self.back_button.setToolTip("Voltar")
+        self.back_button.setToolTip("Voltar (Alt+Seta Esquerda)")
         self.back_button.clicked.connect(self.back_requested.emit)
         layout.addWidget(self.back_button)
 
         # Botão Avançar (→)
         self.forward_button = QPushButton("▶")
         self.forward_button.setProperty("class", "NavButton")
-        self.forward_button.setToolTip("Avançar")
+        self.forward_button.setToolTip("Avançar (Alt+Seta Direita)")
         self.forward_button.clicked.connect(self.forward_requested.emit)
         layout.addWidget(self.forward_button)
 
         # Botão Recarregar (⟳)
         self.reload_button = QPushButton("⟳")
         self.reload_button.setProperty("class", "NavButton")
-        self.reload_button.setToolTip("Recarregar página")
+        self.reload_button.setToolTip("Recarregar página (Ctrl+R / F5)")
         self.reload_button.clicked.connect(self.reload_requested.emit)
         layout.addWidget(self.reload_button)
 
@@ -59,16 +63,44 @@ class NavigationBar(QWidget):
         # Campo de URL / Pesquisa
         self.url_input = QLineEdit()
         self.url_input.setObjectName("UrlInput")
-        self.url_input.setPlaceholderText("Pesquise ou digite um endereço da Web")
+        self.url_input.setPlaceholderText("Pesquise no Google ou digite um endereço da Web")
         self.url_input.returnPressed.connect(self._on_submit)
         layout.addWidget(self.url_input)
 
         # Botão Ir (➔)
         self.go_button = QPushButton("➔")
         self.go_button.setObjectName("GoButton")
-        self.go_button.setToolTip("Navegar")
+        self.go_button.setToolTip("Ir para o endereço digitado (Enter)")
         self.go_button.clicked.connect(self._on_submit)
         layout.addWidget(self.go_button)
+
+        # Separador visual sutil
+        sep = QWidget()
+        sep.setObjectName("NavSeparator")
+        sep.setFixedWidth(1)
+        layout.addWidget(sep)
+
+        # Ações utilitárias à direita (estilo navegadores modernos)
+        # 1. DevTools (F12)
+        self.devtools_button = QPushButton("🛠")
+        self.devtools_button.setProperty("class", "NavButton")
+        self.devtools_button.setToolTip("Ferramentas do Desenvolvedor (F12 / Ctrl+Shift+I)")
+        self.devtools_button.clicked.connect(self.devtools_requested.emit)
+        layout.addWidget(self.devtools_button)
+
+        # 2. Downloads / Salvar
+        self.downloads_button = QPushButton("⬇")
+        self.downloads_button.setProperty("class", "NavButton")
+        self.downloads_button.setToolTip("Salvar página como... (Ctrl+S)")
+        self.downloads_button.clicked.connect(self.downloads_requested.emit)
+        layout.addWidget(self.downloads_button)
+
+        # 3. Menu de Opções (Três pontos)
+        self.menu_button = QPushButton("⋮")
+        self.menu_button.setProperty("class", "NavButton")
+        self.menu_button.setToolTip("Mais opções e atalhos")
+        self.menu_button.clicked.connect(self.menu_requested.emit)
+        layout.addWidget(self.menu_button)
 
     def _on_submit(self) -> None:
         text = self.url_input.text().strip()

@@ -99,6 +99,13 @@ QPushButton#GoButton:pressed {
     background: #005bb5;
 }
 
+/* Separador sutil de navegação */
+QWidget#NavSeparator {
+    background-color: rgba(255, 255, 255, 0.1);
+    max-width: 1px;
+    margin: 6px 4px;
+}
+
 /* QTabBar customizada (Chrome Tabs) */
 QTabBar#NimbusTabBar {
     background: transparent;

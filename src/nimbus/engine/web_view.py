@@ -129,9 +129,17 @@ class NimbusWebView(QWebEngineView):
 
         # Inspecionar Elemento (DevTools)
         act_inspect = menu.addAction("🔍  Inspecionar elemento")
-        act_inspect.triggered.connect(lambda: page.triggerAction(QWebEnginePage.WebAction.InspectElement))
+        act_inspect.triggered.connect(self._open_inspect_element)
 
         menu.exec(event.globalPos())
+
+    def _open_inspect_element(self) -> None:
+        """Abre o DevTools integrado para a página atual."""
+        window = self.window()
+        if hasattr(window, "toggle_devtools"):
+            window.toggle_devtools(self)
+        else:
+            self.page().triggerAction(QWebEnginePage.WebAction.InspectElement)
 
     def _open_view_source(self) -> None:
         """Abre o código-fonte da página atual em uma nova aba usando view-source:."""
