@@ -1,7 +1,7 @@
 """Janela principal do Navegador Nimbus em PySide6."""
 
 from typing import List, Optional
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QUrl, Qt
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWebEngineCore import QWebEngineProfile
 from PySide6.QtWidgets import (
@@ -9,8 +9,8 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QProgressBar,
     QPushButton,
+    QStackedWidget,
     QTabBar,
-    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -64,7 +64,34 @@ class NimbusMainWindow(QMainWindow):
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
 
-        # Barra de Navegação
+        # 1. Faixa Superior de Abas (Top Header estilo Chrome)
+        tab_header_widget = QWidget()
+        tab_header_widget.setObjectName("TabHeaderContainer")
+        tab_header_layout = QHBoxLayout(tab_header_widget)
+        tab_header_layout.setContentsMargins(8, 6, 8, 0)
+        tab_header_layout.setSpacing(4)
+
+        self.tab_bar = QTabBar(self)
+        self.tab_bar.setObjectName("NimbusTabBar")
+        self.tab_bar.setTabsClosable(True)
+        self.tab_bar.setMovable(True)
+        self.tab_bar.setExpanding(False)
+        self.tab_bar.setDrawBase(False)
+        self.tab_bar.currentChanged.connect(self._on_tab_changed)
+        self.tab_bar.tabCloseRequested.connect(self._on_close_tab)
+        tab_header_layout.addWidget(self.tab_bar)
+
+        # Botão '+' para nova aba integrado ao lado da última aba
+        new_tab_btn = QPushButton("+")
+        new_tab_btn.setObjectName("NewTabButton")
+        new_tab_btn.setToolTip("Nova guia (Ctrl+T)")
+        new_tab_btn.clicked.connect(lambda: self.create_new_tab(self._config.default_home_url))
+        tab_header_layout.addWidget(new_tab_btn)
+        tab_header_layout.addStretch()
+
+        root_layout.addWidget(tab_header_widget)
+
+        # 2. Barra de Navegação (abaixo das abas)
         self.nav_bar = NavigationBar(self)
         self.nav_bar.back_requested.connect(self._on_back)
         self.nav_bar.forward_requested.connect(self._on_forward)
@@ -73,7 +100,7 @@ class NimbusMainWindow(QMainWindow):
         self.nav_bar.url_submitted.connect(self._on_navigate_to_url)
         root_layout.addWidget(self.nav_bar)
 
-        # Barra de Progresso
+        # 3. Barra de Progresso
         self.progress_bar = QProgressBar(self)
         self.progress_bar.setObjectName("ProgressBar")
         self.progress_bar.setFixedHeight(2)
@@ -81,22 +108,10 @@ class NimbusMainWindow(QMainWindow):
         self.progress_bar.hide()
         root_layout.addWidget(self.progress_bar)
 
-        # Tab Widget
-        self.tab_widget = QTabWidget(self)
-        self.tab_widget.setDocumentMode(True)
-        self.tab_widget.setTabsClosable(True)
-        self.tab_widget.setMovable(True)
-
-        # Botão '+' para nova aba na barra de abas
-        new_tab_btn = QPushButton("+")
-        new_tab_btn.setObjectName("NewTabButton")
-        new_tab_btn.setToolTip("Abrir nova aba")
-        new_tab_btn.clicked.connect(lambda: self.create_new_tab(self._config.default_home_url))
-        self.tab_widget.setCornerWidget(new_tab_btn)
-
-        self.tab_widget.currentChanged.connect(self._on_tab_changed)
-        self.tab_widget.tabCloseRequested.connect(self._on_close_tab)
-        root_layout.addWidget(self.tab_widget)
+        # 4. Container de Conteúdo Web
+        self.stack_widget = QStackedWidget(self)
+        self.stack_widget.setObjectName("WebContentStack")
+        root_layout.addWidget(self.stack_widget)
 
     def _setup_shortcuts(self) -> None:
         """Configura os atalhos de teclado padrão do Google Chrome."""
@@ -147,7 +162,7 @@ class NimbusMainWindow(QMainWindow):
         self.nav_bar.url_input.selectAll()
 
     def _close_current_tab(self) -> None:
-        idx = self.tab_widget.currentIndex()
+        idx = self.tab_bar.currentIndex()
         if idx >= 0:
             self._on_close_tab(idx)
 
@@ -162,25 +177,25 @@ class NimbusMainWindow(QMainWindow):
             web_view.reload()
 
     def _next_tab(self) -> None:
-        total = self.tab_widget.count()
+        total = self.tab_bar.count()
         if total > 1:
-            next_idx = (self.tab_widget.currentIndex() + 1) % total
-            self.tab_widget.setCurrentIndex(next_idx)
+            next_idx = (self.tab_bar.currentIndex() + 1) % total
+            self.tab_bar.setCurrentIndex(next_idx)
 
     def _prev_tab(self) -> None:
-        total = self.tab_widget.count()
+        total = self.tab_bar.count()
         if total > 1:
-            prev_idx = (self.tab_widget.currentIndex() - 1 + total) % total
-            self.tab_widget.setCurrentIndex(prev_idx)
+            prev_idx = (self.tab_bar.currentIndex() - 1 + total) % total
+            self.tab_bar.setCurrentIndex(prev_idx)
 
     def _select_tab_index(self, index: int) -> None:
-        if index < self.tab_widget.count():
-            self.tab_widget.setCurrentIndex(index)
+        if index < self.tab_bar.count():
+            self.tab_bar.setCurrentIndex(index)
 
     def _select_last_tab(self) -> None:
-        total = self.tab_widget.count()
+        total = self.tab_bar.count()
         if total > 0:
-            self.tab_widget.setCurrentIndex(total - 1)
+            self.tab_bar.setCurrentIndex(total - 1)
 
     def _setup_initial_tab(self) -> None:
         self.create_new_tab(self._config.default_home_url)
@@ -192,7 +207,7 @@ class NimbusMainWindow(QMainWindow):
             tab_id=tab_model.id,
             profile=self._profile,
             config=self._config,
-            parent=self.tab_widget,
+            parent=self.stack_widget,
         )
 
         # Conexão de sinais do WebView
@@ -201,9 +216,11 @@ class NimbusMainWindow(QMainWindow):
         web_view.loading_progress.connect(self._update_progress)
         web_view.favicon_updated.connect(lambda icon, w=web_view: self._update_tab_favicon(w, icon))
 
-        # Adiciona aba visual
-        idx = self.tab_widget.addTab(web_view, "Nova Aba")
-        self.tab_widget.setCurrentIndex(idx)
+        # Adiciona aba visual no QTabBar e página no QStackedWidget
+        self.stack_widget.addWidget(web_view)
+        idx = self.tab_bar.addTab("Nova Aba")
+        self.tab_bar.setCurrentIndex(idx)
+        self.stack_widget.setCurrentIndex(idx)
 
         # Navega para a URL
         target_url = normalize_input_url(url)
@@ -212,15 +229,16 @@ class NimbusMainWindow(QMainWindow):
 
     def get_current_web_view(self) -> Optional[NimbusWebView]:
         """Retorna o WebView da aba ativa no momento."""
-        current_widget = self.tab_widget.currentWidget()
+        current_widget = self.stack_widget.currentWidget()
         if isinstance(current_widget, NimbusWebView):
             return current_widget
         return None
 
     def _on_tab_changed(self, index: int) -> None:
-        if index < 0:
+        if index < 0 or index >= self.stack_widget.count():
             return
-        widget = self.tab_widget.widget(index)
+        self.stack_widget.setCurrentIndex(index)
+        widget = self.stack_widget.widget(index)
         if isinstance(widget, NimbusWebView):
             self._tab_manager.set_active(widget.tab_id)
             self.nav_bar.set_url(widget.url().toString())
@@ -230,20 +248,21 @@ class NimbusMainWindow(QMainWindow):
             )
 
     def _on_close_tab(self, index: int) -> None:
-        widget = self.tab_widget.widget(index)
+        widget = self.stack_widget.widget(index)
         if isinstance(widget, NimbusWebView):
             current_url = widget.url().toString()
             if current_url and current_url != "about:blank":
                 self._closed_tabs_history.append(current_url)
 
-        if self.tab_widget.count() <= 1:
+        if self.tab_bar.count() <= 1:
             # Se for a última aba, fecha a janela
             self.close()
             return
 
         if isinstance(widget, NimbusWebView):
             self._tab_manager.remove_tab(widget.tab_id)
-            self.tab_widget.removeTab(index)
+            self.tab_bar.removeTab(index)
+            self.stack_widget.removeWidget(widget)
             widget.dispose()
 
     def _on_back(self) -> None:
@@ -273,9 +292,9 @@ class NimbusMainWindow(QMainWindow):
             web_view.setUrl(QUrl(normalized))
 
     def _update_tab_title(self, web_view: NimbusWebView, title: str) -> None:
-        idx = self.tab_widget.indexOf(web_view)
+        idx = self.stack_widget.indexOf(web_view)
         if idx != -1:
-            self.tab_widget.setTabText(idx, title)
+            self.tab_bar.setTabText(idx, title)
 
     def _update_tab_url(self, web_view: NimbusWebView, qurl: QUrl) -> None:
         if web_view == self.get_current_web_view():
@@ -286,9 +305,9 @@ class NimbusMainWindow(QMainWindow):
             )
 
     def _update_tab_favicon(self, web_view: NimbusWebView, icon: QIcon) -> None:
-        idx = self.tab_widget.indexOf(web_view)
+        idx = self.stack_widget.indexOf(web_view)
         if idx != -1 and not icon.isNull():
-            self.tab_widget.setTabIcon(idx, icon)
+            self.tab_bar.setTabIcon(idx, icon)
 
     def _update_progress(self, progress: int) -> None:
         if progress < 100:

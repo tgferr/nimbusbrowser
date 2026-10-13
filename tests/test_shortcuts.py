@@ -25,30 +25,30 @@ def test_main_window_shortcuts(qapp, qtbot):
     qtbot.addWidget(window)
 
     # 1. Nova Aba via método disparado por Ctrl+T
-    assert window.tab_widget.count() == 1
-    assert window.tab_widget.currentIndex() == 0
+    assert window.tab_bar.count() == 1
+    assert window.tab_bar.currentIndex() == 0
 
     window.create_new_tab("https://example.com")
-    assert window.tab_widget.count() == 2
+    assert window.tab_bar.count() == 2
     # create_new_tab seleciona a nova aba criada (índice 1)
-    assert window.tab_widget.currentIndex() == 1
+    assert window.tab_bar.currentIndex() == 1
 
     # 2. Navegação de abas (Ctrl+Tab circula para 0, Ctrl+Shift+Tab volta para 1)
     window._next_tab()
-    assert window.tab_widget.currentIndex() == 0
+    assert window.tab_bar.currentIndex() == 0
     window._prev_tab()
-    assert window.tab_widget.currentIndex() == 1
+    assert window.tab_bar.currentIndex() == 1
 
     # 3. Fechar aba via Ctrl+W e reabrir via Ctrl+Shift+T
-    window.tab_widget.setCurrentIndex(1)
+    window.tab_bar.setCurrentIndex(1)
     window._close_current_tab()
-    assert window.tab_widget.count() == 1
+    assert window.tab_bar.count() == 1
     assert len(window._closed_tabs_history) == 1
     assert window._closed_tabs_history[0] == "https://example.com"
 
     # Reabre última
     window._reopen_last_closed_tab()
-    assert window.tab_widget.count() == 2
+    assert window.tab_bar.count() == 2
 
     # 4. Foco na barra de URL (Ctrl+L)
     window._focus_url_bar()

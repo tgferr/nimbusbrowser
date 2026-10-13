@@ -188,19 +188,42 @@
       .footer-hint {
         position: fixed;
         bottom: 24px;
-        color: #555c69;
-        font-size: 12px;
         display: flex;
-        gap: 16px;
+        align-items: center;
+        gap: 12px;
+        background: rgba(18, 22, 30, 0.75);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 8px 18px;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+        user-select: none;
+      }
+
+      .footer-hint .hint-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #d1d9e2;
+        font-weight: 500;
+      }
+
+      .footer-hint .hint-sep {
+        color: rgba(255, 255, 255, 0.15);
       }
 
       .footer-hint kbd {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 11px;
-        color: var(--muted);
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffffff;
+        font-family:
+          ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
       }
     </style>
   </head>
@@ -270,9 +293,13 @@
     </div>
 
     <div class="footer-hint">
-      <span><kbd>Ctrl+T</kbd> Nova Aba</span>
-      <span><kbd>Ctrl+W</kbd> Fechar Aba</span>
-      <span><kbd>Ctrl+L</kbd> Barra de Endereço</span>
+      <div class="hint-item"><kbd>Ctrl+T</kbd> Nova Guia</div>
+      <span class="hint-sep">|</span>
+      <div class="hint-item"><kbd>Ctrl+W</kbd> Fechar Guia</div>
+      <span class="hint-sep">|</span>
+      <div class="hint-item"><kbd>Ctrl+L</kbd> Barra de Endereço</div>
+      <span class="hint-sep">|</span>
+      <div class="hint-item"><kbd>Ctrl+Shift+T</kbd> Reabrir Guia</div>
     </div>
 
     <script>

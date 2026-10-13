@@ -25,17 +25,17 @@ def test_main_window_lifecycle(qapp, qtbot):
     qtbot.addWidget(window)
 
     # Verifica aba inicial
-    assert window.tab_widget.count() == 1
+    assert window.tab_bar.count() == 1
     assert window.get_current_web_view() is not None
 
     # Abre nova aba
     new_web_view = window.create_new_tab("about:blank")
-    assert window.tab_widget.count() == 2
+    assert window.tab_bar.count() == 2
     assert window.get_current_web_view() == new_web_view
 
     # Fecha aba
     window._on_close_tab(1)
-    assert window.tab_widget.count() == 1
+    assert window.tab_bar.count() == 1
 
     # Cleanup explícito no teardown
     window.close()
