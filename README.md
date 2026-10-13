@@ -8,8 +8,11 @@
   <a href="https://github.com/tgferr/nimbusbrowser/releases/latest">
     <img src="https://img.shields.io/badge/Linux_Ubuntu-Download_.AppImage-E95420?style=for-the-badge&logo=ubuntu" alt="Download Linux" />
   </a>
+  <a href="https://github.com/tgferr/nimbusbrowser/releases/latest">
+    <img src="https://img.shields.io/badge/Linux_Portable-Download_.tar.gz-6C757D?style=for-the-badge&logo=linux" alt="Download Tarball" />
+  </a>
   <br>
-  <i>Click the badges above and download the <b>.exe</b> or <b>.AppImage</b> file under the <b>Assets</b> section.</i>
+  <i>Click the badges above and download the <b>.exe</b>, <b>.AppImage</b> or <b>.tar.gz</b> file under the <b>Assets</b> section.</i>
 </div>
 
 <br>

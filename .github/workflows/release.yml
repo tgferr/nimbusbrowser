@@ -161,16 +161,26 @@ jobs:
           mkdir -p dist-installer
           mv Nimbus_Browser*.AppImage dist-installer/Nimbus-Browser-v${{ env.VERSION }}-x86_64.AppImage
 
-      - name: Upload AppImage Artifact
+      - name: Package Portable Tarball (.tar.gz)
+        run: |
+          cd dist
+          tar -czvf ../dist-installer/Nimbus-Browser-v${{ env.VERSION }}-linux-portable.tar.gz Nimbus/
+          cd ..
+
+      - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Nimbus-Ubuntu-AppImage
-          path: dist-installer/*.AppImage
+          name: Nimbus-Linux-Packages
+          path: |
+            dist-installer/*.AppImage
+            dist-installer/*.tar.gz
           if-no-files-found: error
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist-installer/*.AppImage
+          files: |
+            dist-installer/*.AppImage
+            dist-installer/*.tar.gz
           generate_release_notes: true

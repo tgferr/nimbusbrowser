@@ -11,6 +11,13 @@ os.environ.setdefault("QTWEBENGINE_REMOTE_DEBUGGING", "9222")
 # Um fallback pode ser forçado pelo usuário através da variável NIMBUS_SAFE_MODE=1
 safe_mode = os.environ.get("NIMBUS_SAFE_MODE", "0") == "1"
 
+# Mitigação severa de crashes EGL/Wayland no Linux
+if sys.platform.startswith("linux"):
+    os.environ.setdefault("QT_QPA_PLATFORM", "xcb") # Força X11 ao invés de Wayland (evita falha de EGL nativa)
+    if safe_mode:
+        os.environ["QT_OPENGL"] = "software"
+        os.environ["LIBGL_ALWAYS_SOFTWARE"] = "1"
+
 if sys.platform.startswith("win"):
     if safe_mode:
         # Fallback extremo para software rasterizer (CPU) se D3D11 falhar
