@@ -3,15 +3,16 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-# URLs Padrão (Fieis ao original C#)
-DEFAULT_HOME_URL = "https://nimbus-navegadorpaginainicial-4bcada32.base44.app/"
-NEW_TAB_URL = DEFAULT_HOME_URL
-
 # Caminhos de Assets
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 ASSETS_DIR = BASE_DIR / "assets"
 ICON_PATH = ASSETS_DIR / "nimbus_icon.ico"
 OFFLINE_HOME_PATH = ASSETS_DIR / "offline_home.html"
+HOME_HTML_PATH = ASSETS_DIR / "home.html"
+
+# URLs Padrão (Local First)
+DEFAULT_HOME_URL = HOME_HTML_PATH.as_uri() if HOME_HTML_PATH.exists() else "about:blank"
+NEW_TAB_URL = DEFAULT_HOME_URL
 
 
 @dataclass(frozen=True)

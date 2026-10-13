@@ -1,8 +1,9 @@
-# Active Todo — Demanda: Pipeline CI/CD GitHub Actions + Instalador Windows (.exe)
+# Active Todo — Demanda: Modernização Home Page, Design 2026 e Atalhos Chrome
 
-- [x] Configurar PyInstaller spec (`nimbus.spec`) com assets e módulos PySide6
-- [x] Criar script Inno Setup (`installer/nimbus.iss`) com ícones, atalhos e suporte PT-BR
-- [x] Implementar workflow GitHub Actions (`.github/workflows/build-windows.yml`) com releases automáticas
-- [x] Configurar `.gitignore` e preparar repositório para o GitHub
+- [x] Internalizar Home Page nativa e offline-first (`assets/home.html`)
+- [x] Implementar atalhos de teclado padrão do Google Chrome (`Ctrl+T`, `Ctrl+W`, `Ctrl+Shift+T`, `Ctrl+L`, `Ctrl+Tab`, `Ctrl+1..9`, etc.)
+- [x] Modernizar QSS (Glassmorphism, abas flutuantes, bordas arredondadas e pill search bar)
+- [x] Configurar flags de aceleração e performance de renderização no `NimbusWebView`
+- [x] Suíte de testes atualizada e validada (`make test` -> 10 testes passando 100% verde)
 
-**Status**: Pipeline de empacotamento gratuita 100% configurada.
+**Status**: Modernização visual e funcional 100% concluída.

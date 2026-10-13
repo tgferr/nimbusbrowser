@@ -1,8 +1,8 @@
 """Janela principal do Navegador Nimbus em PySide6."""
 
-from typing import Optional
+from typing import List, Optional
 from PySide6.QtCore import QUrl
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWebEngineCore import QWebEngineProfile
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -38,9 +38,11 @@ class NimbusMainWindow(QMainWindow):
         self._config = config or BrowserConfig()
         self._tab_manager = TabManager()
         self._profile: Optional[QWebEngineProfile] = None
+        self._closed_tabs_history: List[str] = []
 
         self._setup_window()
         self._setup_ui()
+        self._setup_shortcuts()
         self._setup_initial_tab()
 
     def _setup_window(self) -> None:
@@ -96,6 +98,90 @@ class NimbusMainWindow(QMainWindow):
         self.tab_widget.tabCloseRequested.connect(self._on_close_tab)
         root_layout.addWidget(self.tab_widget)
 
+    def _setup_shortcuts(self) -> None:
+        """Configura os atalhos de teclado padrão do Google Chrome."""
+        # Ctrl+T: Nova Aba
+        QShortcut(QKeySequence("Ctrl+T"), self, activated=lambda: self.create_new_tab(self._config.default_home_url))
+
+        # Ctrl+W / Ctrl+F4: Fechar Aba Atual
+        QShortcut(QKeySequence("Ctrl+W"), self, activated=self._close_current_tab)
+        QShortcut(QKeySequence("Ctrl+F4"), self, activated=self._close_current_tab)
+
+        # Ctrl+Shift+T: Reabrir Última Aba Fechada
+        QShortcut(QKeySequence("Ctrl+Shift+T"), self, activated=self._reopen_last_closed_tab)
+
+        # Ctrl+R / F5: Recarregar
+        QShortcut(QKeySequence("Ctrl+R"), self, activated=self._on_reload)
+        QShortcut(QKeySequence("F5"), self, activated=self._on_reload)
+
+        # Ctrl+Shift+R / Ctrl+F5: Hard Reload
+        QShortcut(QKeySequence("Ctrl+Shift+R"), self, activated=self._hard_reload)
+        QShortcut(QKeySequence("Ctrl+F5"), self, activated=self._hard_reload)
+
+        # Ctrl+L / Alt+D / F6: Focar Barra de Endereço
+        QShortcut(QKeySequence("Ctrl+L"), self, activated=self._focus_url_bar)
+        QShortcut(QKeySequence("Alt+D"), self, activated=self._focus_url_bar)
+        QShortcut(QKeySequence("F6"), self, activated=self._focus_url_bar)
+
+        # Ctrl+Tab / Ctrl+PageDown: Próxima Aba
+        QShortcut(QKeySequence("Ctrl+Tab"), self, activated=self._next_tab)
+        QShortcut(QKeySequence("Ctrl+PgDown"), self, activated=self._next_tab)
+
+        # Ctrl+Shift+Tab / Ctrl+PageUp: Aba Anterior
+        QShortcut(QKeySequence("Ctrl+Shift+Tab"), self, activated=self._prev_tab)
+        QShortcut(QKeySequence("Ctrl+PgUp"), self, activated=self._prev_tab)
+
+        # Alt+Left: Voltar / Alt+Right: Avançar
+        QShortcut(QKeySequence("Alt+Left"), self, activated=self._on_back)
+        QShortcut(QKeySequence("Alt+Right"), self, activated=self._on_forward)
+
+        # Ctrl+1 a Ctrl+8: Ir para aba específica
+        for i in range(1, 9):
+            QShortcut(QKeySequence(f"Ctrl+{i}"), self, activated=lambda idx=i-1: self._select_tab_index(idx))
+
+        # Ctrl+9: Ir para a última aba
+        QShortcut(QKeySequence("Ctrl+9"), self, activated=self._select_last_tab)
+
+    def _focus_url_bar(self) -> None:
+        self.nav_bar.url_input.setFocus()
+        self.nav_bar.url_input.selectAll()
+
+    def _close_current_tab(self) -> None:
+        idx = self.tab_widget.currentIndex()
+        if idx >= 0:
+            self._on_close_tab(idx)
+
+    def _reopen_last_closed_tab(self) -> None:
+        if self._closed_tabs_history:
+            last_url = self._closed_tabs_history.pop()
+            self.create_new_tab(last_url)
+
+    def _hard_reload(self) -> None:
+        web_view = self.get_current_web_view()
+        if web_view:
+            web_view.reload()
+
+    def _next_tab(self) -> None:
+        total = self.tab_widget.count()
+        if total > 1:
+            next_idx = (self.tab_widget.currentIndex() + 1) % total
+            self.tab_widget.setCurrentIndex(next_idx)
+
+    def _prev_tab(self) -> None:
+        total = self.tab_widget.count()
+        if total > 1:
+            prev_idx = (self.tab_widget.currentIndex() - 1 + total) % total
+            self.tab_widget.setCurrentIndex(prev_idx)
+
+    def _select_tab_index(self, index: int) -> None:
+        if index < self.tab_widget.count():
+            self.tab_widget.setCurrentIndex(index)
+
+    def _select_last_tab(self) -> None:
+        total = self.tab_widget.count()
+        if total > 0:
+            self.tab_widget.setCurrentIndex(total - 1)
+
     def _setup_initial_tab(self) -> None:
         self.create_new_tab(self._config.default_home_url)
 
@@ -144,12 +230,17 @@ class NimbusMainWindow(QMainWindow):
             )
 
     def _on_close_tab(self, index: int) -> None:
+        widget = self.tab_widget.widget(index)
+        if isinstance(widget, NimbusWebView):
+            current_url = widget.url().toString()
+            if current_url and current_url != "about:blank":
+                self._closed_tabs_history.append(current_url)
+
         if self.tab_widget.count() <= 1:
             # Se for a última aba, fecha a janela
             self.close()
             return
 
-        widget = self.tab_widget.widget(index)
         if isinstance(widget, NimbusWebView):
             self._tab_manager.remove_tab(widget.tab_id)
             self.tab_widget.removeTab(index)

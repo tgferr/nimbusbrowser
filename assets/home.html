@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nimbus — Novo Início</title>
+    <style>
+      :root {
+        --bg: #0b0c10;
+        --card-bg: rgba(26, 29, 36, 0.7);
+        --card-hover: rgba(38, 43, 54, 0.9);
+        --border: rgba(255, 255, 255, 0.08);
+        --accent: #0a84ff;
+        --accent-glow: rgba(10, 132, 255, 0.35);
+        --text: #f2f5f8;
+        --muted: #8e99a8;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+      }
+
+      body {
+        background: radial-gradient(
+          circle at 50% 20%,
+          #151821 0%,
+          var(--bg) 70%
+        );
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 10vh;
+        overflow-x: hidden;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 36px;
+        user-select: none;
+      }
+
+      .brand-logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 28px;
+        color: #fff;
+        box-shadow: 0 10px 30px var(--accent-glow);
+      }
+
+      .brand-title {
+        font-size: 38px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        background: linear-gradient(180deg, #ffffff 30%, #a4b3c6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .search-wrapper {
+        width: 90%;
+        max-width: 680px;
+        position: relative;
+        margin-bottom: 48px;
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 10px 22px;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .search-bar:focus-within {
+        border-color: var(--accent);
+        box-shadow: 0 14px 45px var(--accent-glow);
+        background: rgba(28, 32, 42, 0.95);
+      }
+
+      .search-icon {
+        color: var(--muted);
+        font-size: 18px;
+        margin-right: 14px;
+      }
+
+      .search-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text);
+        font-size: 17px;
+      }
+
+      .search-input::placeholder {
+        color: var(--muted);
+      }
+
+      .engine-badge {
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        padding: 4px 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s;
+      }
+
+      .engine-badge:hover {
+        background: rgba(255, 255, 255, 0.16);
+        color: var(--text);
+      }
+
+      .dials-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 110px);
+        gap: 20px;
+        max-width: 540px;
+      }
+
+      .dial-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        height: 105px;
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s ease;
+        user-select: none;
+      }
+
+      .dial-card:hover {
+        background: var(--card-hover);
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .dial-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .dial-name {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .dial-card:hover .dial-name {
+        color: var(--text);
+      }
+
+      .footer-hint {
+        position: fixed;
+        bottom: 24px;
+        color: #555c69;
+        font-size: 12px;
+        display: flex;
+        gap: 16px;
+      }
+
+      .footer-hint kbd {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="brand">
+      <div class="brand-logo">N</div>
+      <div class="brand-title">Nimbus</div>
+    </div>
+
+    <div class="search-wrapper">
+      <form id="search-form" onsubmit="handleSearch(event)">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Pesquisar com Google ou digitar endereço..."
+            autofocus
+            autocomplete="off"
+          />
+          <span class="engine-badge" id="engine-btn" onclick="toggleEngine()"
+            >Google</span
+          >
+        </div>
+      </form>
+    </div>
+
+    <div class="dials-grid">
+      <a href="https://github.com" class="dial-card">
+        <div class="dial-icon" style="background: #24292e">⚡</div>
+        <span class="dial-name">GitHub</span>
+      </a>
+      <a href="https://youtube.com" class="dial-card">
+        <div class="dial-icon" style="background: #ff0000">▶</div>
+        <span class="dial-name">YouTube</span>
+      </a>
+      <a href="https://reddit.com" class="dial-card">
+        <div class="dial-icon" style="background: #ff4500">👽</div>
+        <span class="dial-name">Reddit</span>
+      </a>
+      <a href="https://chatgpt.com" class="dial-card">
+        <div class="dial-icon" style="background: #10a37f">✦</div>
+        <span class="dial-name">ChatGPT</span>
+      </a>
+      <a href="https://wikipedia.org" class="dial-card">
+        <div class="dial-icon" style="background: #333333">W</div>
+        <span class="dial-name">Wikipédia</span>
+      </a>
+      <a href="https://news.ycombinator.com" class="dial-card">
+        <div class="dial-icon" style="background: #ff6600">Y</div>
+        <span class="dial-name">Hacker News</span>
+      </a>
+      <a href="https://x.com" class="dial-card">
+        <div
+          class="dial-icon"
+          style="background: #000000; border: 1px solid #333"
+        >
+          𝕏
+        </div>
+        <span class="dial-name">X</span>
+      </a>
+      <a href="https://duckduckgo.com" class="dial-card">
+        <div class="dial-icon" style="background: #de5833">🦆</div>
+        <span class="dial-name">DuckDuckGo</span>
+      </a>
+    </div>
+
+    <div class="footer-hint">
+      <span><kbd>Ctrl+T</kbd> Nova Aba</span>
+      <span><kbd>Ctrl+W</kbd> Fechar Aba</span>
+      <span><kbd>Ctrl+L</kbd> Barra de Endereço</span>
+    </div>
+
+    <script>
+      const engines = [
+        { name: "Google", url: "https://www.google.com/search?q=" },
+        { name: "DuckDuckGo", url: "https://duckduckgo.com/?q=" },
+        { name: "Bing", url: "https://www.bing.com/search?q=" },
+      ];
+      let currentEngine = 0;
+
+      function toggleEngine() {
+        currentEngine = (currentEngine + 1) % engines.length;
+        document.getElementById("engine-btn").textContent =
+          engines[currentEngine].name;
+        document.getElementById("search-input").placeholder =
+          `Pesquisar com ${engines[currentEngine].name} ou digitar endereço...`;
+      }
+
+      function handleSearch(e) {
+        e.preventDefault();
+        const query = document.getElementById("search-input").value.trim();
+        if (!query) return;
+
+        if (query.startsWith("http://") || query.startsWith("https://")) {
+          window.location.href = query;
+        } else if (query.includes(".") && !query.includes(" ")) {
+          window.location.href = "https://" + query;
+        } else {
+          window.location.href =
+            engines[currentEngine].url + encodeURIComponent(query);
+        }
+      }
+    </script>
+  </body>
+</html>

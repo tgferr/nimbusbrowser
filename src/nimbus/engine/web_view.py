@@ -57,6 +57,11 @@ class NimbusWebView(QWebEngineView):
         settings.setAttribute(QWebEngineSettings.WebAttribute.LocalStorageEnabled, self._config.enable_local_storage)
         settings.setAttribute(QWebEngineSettings.WebAttribute.ScrollAnimatorEnabled, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.FullScreenSupportEnabled, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.Accelerated2dCanvasEnabled, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.WebGLEnabled, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.DnsPrefetchEnabled, True)
 
     def _connect_signals(self) -> None:
         self.titleChanged.connect(self._on_title_changed)

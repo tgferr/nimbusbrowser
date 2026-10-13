@@ -14,27 +14,27 @@
 
 NIMBUS_DARK_THEME_QSS = """
 QMainWindow {
-    background-color: #0F1115;
+    background-color: #0b0c10;
 }
 
 QWidget#CentralWidget {
-    background-color: #0F1115;
+    background-color: #0b0c10;
 }
 
-/* Barra de Topo & Navegação */
+/* Barra de Topo & Navegação com Glassmorphism */
 QWidget#TopBarContainer {
-    background-color: #0B0B0D;
-    border-bottom: 1px solid #1C1D24;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #16181f, stop:1 #101217);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 2px 8px;
 }
 
-/* Botões de Ação Redondos com Feedback */
+/* Botões de Ação Redondos com Microinterações */
 QPushButton.NavButton {
     background-color: transparent;
-    color: #B7C0CC;
+    color: #9aa5b5;
     border: none;
     border-radius: 17px;
-    font-size: 15px;
-    font-weight: bold;
+    font-size: 14px;
     min-width: 34px;
     max-width: 34px;
     min-height: 34px;
@@ -42,87 +42,97 @@ QPushButton.NavButton {
 }
 
 QPushButton.NavButton:hover {
-    background-color: #202127;
-    color: #F2F5F8;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
 }
 
 QPushButton.NavButton:pressed {
-    background-color: #2C2D35;
+    background-color: rgba(255, 255, 255, 0.14);
 }
 
 QPushButton.NavButton:disabled {
-    color: #4A4D57;
+    color: #3f444e;
 }
 
-/* Campo de URL / Pesquisa */
+/* Campo de URL com Pill Design Moderno */
 QLineEdit#UrlInput {
-    background-color: #1C1B22;
-    color: #F2F5F8;
-    border: 1px solid #3A3940;
-    border-radius: 16px;
-    padding: 6px 14px;
+    background-color: #1a1d24;
+    color: #f2f5f8;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 6px 16px;
     font-size: 13px;
-    selection-background-color: #0A84FF;
+    selection-background-color: #0a84ff;
 }
 
 QLineEdit#UrlInput:focus {
-    border: 1px solid #0A84FF;
-    background-color: #212028;
+    border: 1px solid #0a84ff;
+    background-color: #1e222b;
 }
 
 /* Botão Ir / Busca */
 QPushButton#GoButton {
-    background-color: #0A84FF;
-    color: #FFFFFF;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0a84ff, stop:1 #006ee6);
+    color: #ffffff;
     border: none;
-    border-radius: 15px;
+    border-radius: 16px;
     font-weight: bold;
-    min-width: 30px;
-    max-width: 30px;
-    min-height: 30px;
-    max-height: 30px;
+    font-size: 13px;
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
 }
 
 QPushButton#GoButton:hover {
-    background-color: #0070E0;
+    background: #0077f0;
 }
 
 QPushButton#GoButton:pressed {
-    background-color: #005BB5;
+    background: #005bb5;
 }
 
-/* Barra de Abas */
+/* Barra de Abas Flutuantes e Modernas */
 QTabWidget::pane {
     border: none;
-    background-color: #0F1115;
+    background-color: #0b0c10;
+}
+
+QTabBar {
+    background: transparent;
 }
 
 QTabBar::tab {
-    background-color: #111216;
-    color: #B7C0CC;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    padding: 8px 16px;
+    background: #14171d;
+    color: #8e99a8;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 8px 18px;
     min-width: 140px;
     max-width: 220px;
-    margin-right: 2px;
+    margin-right: 4px;
+    margin-top: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: none;
 }
 
 QTabBar::tab:hover {
-    background-color: #1A1B20;
-    color: #F2F5F8;
+    background: #1c2028;
+    color: #f2f5f8;
 }
 
 QTabBar::tab:selected {
-    background-color: #14151A;
-    color: #F2F5F8;
-    border-bottom: 2px solid #0A84FF;
+    background: #1e222a;
+    color: #ffffff;
+    border-top: 2px solid #0a84ff;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Botão de Fechar Aba */
 QPushButton.CloseTabButton {
     background-color: transparent;
-    color: #B7C0CC;
+    color: #8e99a8;
     border: none;
     border-radius: 8px;
     font-size: 13px;
@@ -133,14 +143,14 @@ QPushButton.CloseTabButton {
 }
 
 QPushButton.CloseTabButton:hover {
-    background-color: #383A42;
-    color: #FF5555;
+    background-color: rgba(255, 69, 58, 0.2);
+    color: #ff453a;
 }
 
 /* Botão Nova Aba '+' */
 QPushButton#NewTabButton {
     background-color: transparent;
-    color: #B7C0CC;
+    color: #9aa5b5;
     border: none;
     border-radius: 14px;
     font-size: 18px;
@@ -148,14 +158,15 @@ QPushButton#NewTabButton {
     max-width: 28px;
     min-height: 28px;
     max-height: 28px;
+    margin-left: 4px;
 }
 
 QPushButton#NewTabButton:hover {
-    background-color: #202127;
-    color: #F2F5F8;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
 }
 
-/* Barra de Progresso Sutil */
+/* Barra de Progresso com Gradiente */
 QProgressBar#ProgressBar {
     background-color: transparent;
     border: none;
@@ -163,6 +174,6 @@ QProgressBar#ProgressBar {
 }
 
 QProgressBar#ProgressBar::chunk {
-    background-color: #0A84FF;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0a84ff, stop:1 #5e5ce6);
 }
 """

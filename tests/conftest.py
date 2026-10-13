@@ -14,6 +14,5 @@ def pytest_sessionfinish(session, exitstatus):
     devido à destruição tardia de singletons do Chromium após o desligamento do QCoreApplication.
     Usar os._exit(exitstatus) garante saída com código de retorno preservado e sem falha de segmentação.
     """
-    # Se todos os testes passaram, sai de forma determinística
     import os
     os._exit(exitstatus)
