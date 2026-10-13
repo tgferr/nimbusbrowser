@@ -147,6 +147,7 @@ Aciona as lentes especializadas antes da escrita de código:
 
 - **Processos Zumbis**: Fechar explicitamente browser e contexto em blocos `finally` ou context managers assíncronos para evitar instâncias órfãs de Chromium/Gecko consumindo CPU e memória.
 - **QtWebEngine Offscreen Teardown (Linux)**: Em ambientes sem display gráfico rodando pytest com QWebEngine, o processo pode disparar segfault tardio na libc ao tentar destruir singletons C++ do Chromium após o desligamento da aplicação. Utilizar hook `pytest_sessionfinish` no `conftest.py` com saída determinística.
+- **Inno Setup em Subdiretórios**: Scripts Inno Setup (`.iss`) executados de dentro de subpastas (ex: `installer/`) tomam a própria subpasta como diretório base. Definir `SourceDir=..` na seção `[Setup]` para que referências a `assets` e `dist` resolvam a partir da raiz do repositório.
 
 ### 7.2 Protocolos & Compatibilidade
 
