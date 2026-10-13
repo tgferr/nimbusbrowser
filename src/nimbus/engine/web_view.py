@@ -2,13 +2,14 @@
 
 from typing import Callable, Optional
 from PySide6.QtCore import QUrl, Signal
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QAction, QContextMenuEvent, QIcon
 from PySide6.QtWebEngineCore import (
     QWebEnginePage,
     QWebEngineProfile,
     QWebEngineSettings,
 )
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import QMenu
 
 from nimbus.core.constants import BrowserConfig
 
@@ -91,6 +92,63 @@ class NimbusWebView(QWebEngineView):
         })();
         """
         self.page().runJavaScript(js_code, callback)
+
+    def contextMenuEvent(self, event: QContextMenuEvent) -> None:
+        """Menu de contexto M2 moderno, traduzido e funcional."""
+        menu = QMenu(self)
+        menu.setObjectName("NimbusContextMenu")
+
+        page = self.page()
+        history = self.history()
+
+        # Voltar
+        act_back = menu.addAction("◀  Voltar")
+        act_back.setEnabled(history.canGoBack())
+        act_back.triggered.connect(self.back)
+
+        # Avançar
+        act_forward = menu.addAction("▶  Avançar")
+        act_forward.setEnabled(history.canGoForward())
+        act_forward.triggered.connect(self.forward)
+
+        # Recarregar
+        act_reload = menu.addAction("⟳  Recarregar")
+        act_reload.triggered.connect(self.reload)
+
+        menu.addSeparator()
+
+        # Salvar Página Como...
+        act_save = menu.addAction("💾  Salvar página como...")
+        act_save.triggered.connect(lambda: page.triggerAction(QWebEnginePage.WebAction.SavePage))
+
+        # Exibir Código-Fonte (View Source)
+        act_source = menu.addAction("📄  Exibir código-fonte")
+        act_source.triggered.connect(self._open_view_source)
+
+        menu.addSeparator()
+
+        # Inspecionar Elemento (DevTools)
+        act_inspect = menu.addAction("🔍  Inspecionar elemento")
+        act_inspect.triggered.connect(lambda: page.triggerAction(QWebEnginePage.WebAction.InspectElement))
+
+        menu.exec(event.globalPos())
+
+    def _open_view_source(self) -> None:
+        """Abre o código-fonte da página atual em uma nova aba usando view-source:."""
+        current_url = self.url().toString()
+        if not current_url or current_url == "about:blank":
+            return
+
+        if current_url.startswith("view-source:"):
+            return
+
+        source_url = f"view-source:{current_url}"
+        # Notifica janela principal solicitando abertura de nova aba
+        window = self.window()
+        if hasattr(window, "create_new_tab"):
+            window.create_new_tab(source_url)
+        else:
+            self.setUrl(QUrl(source_url))
 
     def dispose(self) -> None:
         """Libera determinísticamente os recursos do WebView."""

@@ -110,7 +110,7 @@ QTabBar#NimbusTabBar::tab {
     color: #8e99a8;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    padding: 7px 14px 7px 14px;
+    padding: 7px 8px 7px 14px;
     min-width: 140px;
     max-width: 220px;
     margin-right: 4px;
@@ -132,20 +132,20 @@ QTabBar#NimbusTabBar::tab:selected {
     border-bottom: 1px solid #1e222b;
 }
 
-/* Botão de Fechar Aba 'X' explícito e visível */
+/* Botão de Fechar Aba 'X' posicionado harmonicamente à esquerda do limite da aba */
 QPushButton.TabCloseButton {
     background-color: transparent;
     color: #8e99a8;
     border: none;
-    border-radius: 9px;
-    font-size: 15px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: bold;
     min-width: 18px;
     max-width: 18px;
     min-height: 18px;
     max-height: 18px;
-    margin-left: 6px;
-    margin-right: 2px;
+    margin-left: 4px;
+    margin-right: 8px;
 }
 
 QPushButton.TabCloseButton:hover {
@@ -156,6 +156,38 @@ QPushButton.TabCloseButton:hover {
 QPushButton.TabCloseButton:pressed {
     background-color: rgba(255, 69, 58, 0.5);
     color: #ffffff;
+}
+
+/* Menu de Contexto Escuro M2 */
+QMenu#NimbusContextMenu {
+    background-color: #161922;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 6px;
+    color: #f2f5f8;
+    font-size: 13px;
+}
+
+QMenu#NimbusContextMenu::item {
+    background-color: transparent;
+    padding: 7px 22px 7px 12px;
+    border-radius: 8px;
+    margin: 2px 0px;
+}
+
+QMenu#NimbusContextMenu::item:selected {
+    background-color: #0a84ff;
+    color: #ffffff;
+}
+
+QMenu#NimbusContextMenu::item:disabled {
+    color: #555c68;
+}
+
+QMenu#NimbusContextMenu::separator {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.08);
+    margin: 4px 6px;
 }
 
 /* Botão Nova Aba '+' ao lado das abas */

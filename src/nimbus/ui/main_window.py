@@ -41,9 +41,28 @@ class NimbusMainWindow(QMainWindow):
         self._closed_tabs_history: List[str] = []
 
         self._setup_window()
+        self._setup_downloads()
         self._setup_ui()
         self._setup_shortcuts()
         self._setup_initial_tab()
+
+    def _setup_downloads(self) -> None:
+        """Configura gerenciador de downloads para Salvar Página e arquivos."""
+        profile = QWebEngineProfile.defaultProfile()
+        profile.downloadRequested.connect(self._on_download_requested)
+
+    def _on_download_requested(self, download) -> None:
+        """Abre caixa de diálogo para salvar arquivo/página quando solicitado."""
+        from PySide6.QtWidgets import QFileDialog
+        suggested = download.suggestedFileName() or download.downloadFileName() or "pagina.html"
+        save_path, _ = QFileDialog.getSaveFileName(self, "Salvar Como...", suggested)
+        if save_path:
+            import os
+            download.setDownloadDirectory(os.path.dirname(save_path))
+            download.setDownloadFileName(os.path.basename(save_path))
+            download.accept()
+        else:
+            download.cancel()
 
     def _setup_window(self) -> None:
         self.setWindowTitle(self._config.window_title)
