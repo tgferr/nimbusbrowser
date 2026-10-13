@@ -12,6 +12,9 @@ on:
 permissions:
   contents: write
 
+env:
+  ACTIONS_RUNNER_FORCE_NODE24: "true"
+
 jobs:
   build-windows:
     runs-on: windows-latest

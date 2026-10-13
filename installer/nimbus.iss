@@ -1,8 +1,8 @@
 ; Script de Instalacao do Navegador Nimbus via Inno Setup
 #define MyAppName "Navegador Nimbus"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "Nimbus"
-#define MyAppURL "https://github.com"
+#define MyAppURL "https://github.com/tgferr/nimbusbrowser"
 #define MyAppExeName "Nimbus.exe"
 
 [Setup]

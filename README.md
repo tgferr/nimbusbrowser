@@ -29,7 +29,7 @@
 
 You can always download the latest installer directly with:
 
-👉 **[Download Latest Windows Installer (`Nimbus-Setup.exe`)](https://github.com/tgferr/nimbusbrowser/releases/latest/download/Nimbus-Setup-v0.1.0.exe)**
+👉 **[Download Latest Windows Installer (`Nimbus-Setup.exe`)](https://github.com/tgferr/nimbusbrowser/releases/latest/download/Nimbus-Setup-v0.2.0.exe)**
 
 Or visit the **[GitHub Releases Page](https://github.com/tgferr/nimbusbrowser/releases/latest)** to pick any specific release artifact.
 
